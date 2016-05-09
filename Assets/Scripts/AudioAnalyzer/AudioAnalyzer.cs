@@ -64,6 +64,12 @@ public class AudioAnalyzer : MonoBehaviour
 			useBakedAudio = true;
 		}
 
+		if (useBakedAudio && clip != null) {
+			source.Stop();
+			source.clip = clip;
+			source.Play();
+		}
+
 		StartCoroutine(ManageBuffer());
     }
 
