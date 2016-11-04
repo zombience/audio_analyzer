@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 using System.Collections;
  
 [RequireComponent(typeof(AudioSource))]
@@ -29,8 +30,13 @@ public class AudioAnalyzer : MonoBehaviour
 	[SerializeField]
 	protected bool listen, useBakedAudio;
 
+	protected bool isListening; 
+
 	protected SelectInputGUI micSelector;
 	protected AudioSource source;
+	[SerializeField]
+	protected AudioMixer mixer;
+
 	[SerializeField]
 	protected AudioClip clip;
 	protected float[] band = new float[BANDS]; // used for accumulating freqData
@@ -43,10 +49,17 @@ public class AudioAnalyzer : MonoBehaviour
 	void Start() 
 	{
 		
-		source = GetComponent<AudioSource>();
+		if(!mixer)
+		{
+			Debug.LogError("no mixer found on audio analyzer object: mixer must be set in inspector");
+			return;
+		}
 
+		isListening = !listen;
+		source = GetComponent<AudioSource>();
+		
+		mixer.SetFloat("InputVolume", listen ? 0f : -80f);
 		source.loop = true; 
-		source.mute = !listen; // if audio is audible through original device (such as sound system with multiple outputs) as well as through unity, there is a noticeable delay. 
 
 		try
 		{
@@ -75,6 +88,11 @@ public class AudioAnalyzer : MonoBehaviour
 
 	void Update()
 	{
+		if(!mixer)
+		{
+			Debug.LogError("no mixer found on audio analyzer object: mixer must be set in inspector");
+			return;
+		}
 		// main audio analysis
 		GetMultibandAmplitude();
 		
@@ -92,9 +110,15 @@ public class AudioAnalyzer : MonoBehaviour
 				micSelector = null;
 			}
 		}
-		
-		if (source.mute == listen)
-			source.mute = !listen;	 
+
+
+		// unity will no longer process audio on a muted AudioSource
+		// the mixer must be muted instead
+		if(listen == isListening)
+		{
+			isListening = !listen;
+			mixer.SetFloat("InputVolume", listen ? 0f : -80f);
+		}
 	}
 	#endregion
 

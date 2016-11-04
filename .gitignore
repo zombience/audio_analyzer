@@ -12,6 +12,9 @@
 *.userprefs
 *.pidb
 *.booproj
+#sublime text project files
+*.sublime-*
+
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt

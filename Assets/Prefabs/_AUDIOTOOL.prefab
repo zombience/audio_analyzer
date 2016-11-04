@@ -9,7 +9,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 400000}
   - 82: {fileID: 8200000}
-  - 114: {fileID: 11400000}
+  - 114: {fileID: 114000011021278070}
   m_Layer: 0
   m_Name: _AUDIOTOOL
   m_TagString: Untagged
@@ -24,8 +24,9 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: .738750458, y: 0, z: 0}
+  m_LocalPosition: {x: 0.73875046, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -37,7 +38,7 @@ AudioSource:
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300001, guid: f340c064471b102418c32a5c53206f4e,
+  OutputAudioMixerGroup: {fileID: 243000013589504980, guid: f340c064471b102418c32a5c53206f4e,
     type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
@@ -45,6 +46,7 @@ AudioSource:
   m_Pitch: 1
   Loop: 0
   Mute: 0
+  Spatialize: 0
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
@@ -69,6 +71,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
+    m_RotationOrder: 4
   panLevelCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -79,6 +82,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
+    m_RotationOrder: 0
   spreadCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -89,6 +93,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
+    m_RotationOrder: 4
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -99,30 +104,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58277f9b1f0464f44bb4e32741a68b15, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mGain: 1
-  crossovers: 0a00000050000000960000002c010000
-  bandGain:
-  - 0
-  - 0
-  - 0
-  - 0
-  easeAmplitude: 1
-  climbRate: .00999999978
-  fallRate: .0500000007
-  listen: 0
-  useBakedAudio: 0
-  clip: {fileID: 8300000, guid: 5458b71d9d6d2e441b40ee00e2c3ade7, type: 3}
+    m_RotationOrder: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -134,3 +116,27 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 100000}
   m_IsPrefabParent: 1
+--- !u!114 &114000011021278070
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58277f9b1f0464f44bb4e32741a68b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  crossovers: 0a00000050000000960000002c010000
+  bandGain:
+  - 250
+  - 2500
+  - 8000
+  - 15000
+  easeAmplitude: 1
+  climbRate: 0.01
+  fallRate: 0.05
+  listen: 0
+  useBakedAudio: 1
+  mixer: {fileID: 24100000, guid: f340c064471b102418c32a5c53206f4e, type: 2}
+  clip: {fileID: 8300000, guid: 9e0e82b89ded02a43ab4514fdc0bb3aa, type: 3}
