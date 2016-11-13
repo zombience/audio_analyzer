@@ -40,7 +40,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 243000013589504980, guid: f340c064471b102418c32a5c53206f4e,
     type: 2}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 322b972014f9cbb49ae6993ce54b2a1f, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -136,7 +136,7 @@ MonoBehaviour:
   easeAmplitude: 1
   climbRate: 0.01
   fallRate: 0.05
-  listen: 0
+  listen: 1
   useBakedAudio: 1
   mixer: {fileID: 24100000, guid: f340c064471b102418c32a5c53206f4e, type: 2}
-  clip: {fileID: 8300000, guid: 9e0e82b89ded02a43ab4514fdc0bb3aa, type: 3}
+  clip: {fileID: 8300000, guid: 322b972014f9cbb49ae6993ce54b2a1f, type: 3}
