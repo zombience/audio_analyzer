@@ -29,11 +29,14 @@ To get started quickly, simply duplicate the scene and manipulate objects as you
 For AudioAnalyzer.cs to work properly, it must: 
 * have an Audio Source component attached to its game object
 * have an output group assigned to the Audio Source
+
 ![audiosource mixer property](https://raw.github.com/zombience/audio_analyzer/git_images/images_for_github/audiosource_mixer.PNG)
 * have the volume parameter of that mixer group be exposed
+
 ![mixer](https://raw.github.com/zombience/audio_analyzer/git_images/images_for_github/audio_mixer.PNG)
 * the volume parameter must be named "InputVolume" (case sensitive)
 * have the mixer containing the above output group assigned to the "Mixer" parameter on the AudioAnalyzer component
+
 ![audio analyzer mixer property](https://raw.github.com/zombience/audio_analyzer/git_images/images_for_github/audioanalyzer_mixer.PNG)
 * have either an input audio stream available (line in or mic), or have an audio file to read from
 
