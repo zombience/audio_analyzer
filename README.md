@@ -24,7 +24,7 @@ To get started quickly, simply duplicate the scene and manipulate objects as you
 ## AudioAnalyzer Inspector ##
 
 ### Requirements ###
-<audioanalyzer inspector pic>
+![AudioAnalyzer Inspector](https://raw.github.com/zombience/audio_analyzer/git_images/images_for_github/audioanalyzer_inspector.PNG)
 
 For AudioAnalyzer.cs to work properly, it must: 
 * have an Audio Source component attached to its game object
@@ -34,13 +34,13 @@ For AudioAnalyzer.cs to work properly, it must:
 * have the mixer containing the above output group assigned to the "Mixer" parameter on the AudioAnalyzer component
 * have either an input audio stream available (line in or mic), or have an audio file to read from
 
-<audiosource_mixer pic>
-<audioanalyzer_mixer pic>
-<audiomixer pic>
+![audio analyzer mixer property](https://raw.github.com/zombience/audio_analyzer/git_images/images_for_github/audioanalyzer_mixer.PNG)
+![audiosource mixer property](https://raw.github.com/zombience/audio_analyzer/git_images/images_for_github/audiosource_mixer.PNG)
+![mixer](https://raw.github.com/zombience/audio_analyzer/git_images/images_for_github/audio_mixer.PNG)
 
 ### Explanation of controls ###
 
-<audioanalyzer inspector pic>
+![AudioAnalyzer Inspector](https://raw.github.com/zombience/audio_analyzer/git_images/images_for_github/audioanalyzer_inspector.PNG)
 
 #### Crossovers ####
 these are the crossover points between audio bands, so these numbers essentially control what constitutes "low", "mids", and "highs" etc. 
