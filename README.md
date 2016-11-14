@@ -17,7 +17,7 @@ Assets > Scenes > tests > audioTest.unity
 
 Press play, and you will see four cubes move and change color based on the frequencies analyzed in the provided sample audio.
 
-<cubespicture>
+![alt tag](https://raw.githubusercontent.com/zombience/audio_analyzer/git_images/images/reacting_cubes.PNG)
 
 To get started quickly, simply duplicate the scene and manipulate objects as you'd like, change settings and add new objects  
 
