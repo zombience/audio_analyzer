@@ -82,6 +82,7 @@ defaults to "I", this is the key to press during play to switch audio input meth
 
 ## Future Developments and Plans ##
 
-i plan to create a polymorphic structure for fx, instituting a base class and interface for ease of extensions and custom fx
-i will implementing windowing on bands, so that audio data is more realistic / accurate
-variable number of bands will be implemented for more or less detail
+* i plan to create a polymorphic structure for fx, instituting a base class and interface for ease of extensions and custom fx
+* i will implementing windowing on bands, so that audio data is more realistic / accurate
+* variable number of bands will be implemented for more or less detail
+
