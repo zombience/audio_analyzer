@@ -44,6 +44,11 @@ public class AudioAnalyzer : MonoBehaviour
 	protected string selectedDevice;
 	protected int minFreq, maxFreq;
 
+
+    // assign a key here to load the input selection menu on play
+    [SerializeField]
+    protected KeyCode inputSelectionKey = KeyCode.I;
+
 	//TODO: put this in another thread, see if it improves FPS on mac
 	#region Unity Methods
 	void Start() 
@@ -97,7 +102,7 @@ public class AudioAnalyzer : MonoBehaviour
 		GetMultibandAmplitude();
 		
 		// select audio input device
-		if (Input.GetKeyDown(KeyCode.I))
+		if (Input.GetKeyDown(inputSelectionKey))
 		{
 			if (micSelector == null)
 			{
@@ -187,7 +192,7 @@ public class AudioAnalyzer : MonoBehaviour
 			source.Stop(); 
 			Microphone.End(selectedDevice);
 				
-			// set new clip to new recording and wait for recording to being before playing source
+			// set new clip to new recording and wait for recording to begin before playing source
 			source.clip = Microphone.Start(selectedDevice, true, 10, maxFreq);
 			while (Microphone.GetPosition(selectedDevice) <= 0)
 				yield return Microphone.GetPosition(selectedDevice); 
@@ -207,7 +212,7 @@ public class AudioAnalyzer : MonoBehaviour
         float[] data = new float[sampleCount];
 
         float a = 0;
-		GetComponent<AudioSource>().GetSpectrumData(data, 0, FFTWindow.Hamming);
+		source.GetSpectrumData(data, 0, FFTWindow.Hamming);
 
         foreach(float s in data) 
             a += Mathf.Abs(s);
