@@ -17,30 +17,32 @@ Assets > Scenes > tests > audioTest.unity
 
 Press play, and you will see four cubes move and change color based on the frequencies analyzed in the provided sample audio.
 
-<cubespicture>
+![reactive scene](https://raw.github.com/zombience/audio_analyzer/git_images/images_for_github/reacting_cubes.PNG)
 
 To get started quickly, simply duplicate the scene and manipulate objects as you'd like, change settings and add new objects  
 
 ## AudioAnalyzer Inspector ##
 
 ### Requirements ###
-<audioanalyzer inspector pic>
+![AudioAnalyzer Inspector](https://raw.github.com/zombience/audio_analyzer/git_images/images_for_github/audioanalyzer_inspector.PNG)
 
 For AudioAnalyzer.cs to work properly, it must: 
 * have an Audio Source component attached to its game object
 * have an output group assigned to the Audio Source
-** have the volume parameter of that mixer group be exposed
-** the volume parameter must be named "InputVolume" (case sensitive)
-* have the mixer containing the above output group assigned to the "Mixer" parameter on the AudioAnalyzer component
-* have either an input audio stream available (line in or mic), or have an audio file to read from
 
-<audiosource_mixer pic>
-<audioanalyzer_mixer pic>
-<audiomixer pic>
+![audiosource mixer property](https://raw.github.com/zombience/audio_analyzer/git_images/images_for_github/audiosource_mixer.PNG)
+* have the volume parameter of that mixer group be exposed
+
+![mixer](https://raw.github.com/zombience/audio_analyzer/git_images/images_for_github/audio_mixer.PNG)
+* the volume parameter must be named "InputVolume" (case sensitive)
+* have the mixer containing the above output group assigned to the "Mixer" parameter on the AudioAnalyzer component
+
+![audio analyzer mixer property](https://raw.github.com/zombience/audio_analyzer/git_images/images_for_github/audioanalyzer_mixer.PNG)
+* have either an input audio stream available (line in or mic), or have an audio file to read from
 
 ### Explanation of controls ###
 
-<audioanalyzer inspector pic>
+![AudioAnalyzer Inspector](https://raw.github.com/zombience/audio_analyzer/git_images/images_for_github/audioanalyzer_inspector.PNG)
 
 #### Crossovers ####
 these are the crossover points between audio bands, so these numbers essentially control what constitutes "low", "mids", and "highs" etc. 
@@ -78,4 +80,9 @@ the chosen baked audio file to be used in case of non-realtime input
 defaults to "I", this is the key to press during play to switch audio input methods (e.g. microphone, line in, etc)
 
 
+## Future Developments and Plans ##
+
+* i plan to create a polymorphic structure for fx, instituting a base class and interface for ease of extensions and custom fx
+* i will implementing windowing on bands, so that audio data is more realistic / accurate
+* variable number of bands will be implemented for more or less detail
 
