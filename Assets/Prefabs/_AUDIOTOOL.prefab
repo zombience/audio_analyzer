@@ -140,3 +140,4 @@ MonoBehaviour:
   useBakedAudio: 1
   mixer: {fileID: 24100000, guid: f340c064471b102418c32a5c53206f4e, type: 2}
   clip: {fileID: 8300000, guid: 322b972014f9cbb49ae6993ce54b2a1f, type: 3}
+  inputSelectionKey: 105

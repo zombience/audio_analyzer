@@ -52,6 +52,7 @@ In a future update I will have a variable number of audio bands, but currently a
 this is the amount to boost the gain of each band. 
 increasingly high frequencies in the audio spectrum tend to have less energy (i.e. lower amplitude) and must be boosted to acheive an adequate effect in this context. 
 bands may also need to be boosted / attenuated based on different source audio. 
+the saved settings are, again, "magic numbers" which have been derived by trial and error.
 
 #### Ease Ampitude ####
 this setting determines whether the amplitude provided by Audio Analyzer should transition smoothly from preious values to current values, or whether changes should happen instantaneously. 
@@ -76,5 +77,5 @@ the chosen baked audio file to be used in case of non-realtime input
 #### Input Selection Key ####
 defaults to "I", this is the key to press during play to switch audio input methods (e.g. microphone, line in, etc)
 
- 
+
 

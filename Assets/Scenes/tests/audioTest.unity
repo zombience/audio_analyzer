@@ -199,7 +199,7 @@ MonoBehaviour:
   high: {r: 0, g: 0.751724, b: 1, a: 0}
   low: {r: 1, g: 0.6, b: 0, a: 0}
   band: 1
-  maxInput: 33
+  maxInput: 10
 --- !u!1001 &381282576
 Prefab:
   m_ObjectHideFlags: 0
@@ -238,6 +238,16 @@ Prefab:
     - target: {fileID: 400000, guid: 7a2053ad8e2dd1d408d858e4302cbda5, type: 2}
       propertyPath: m_RootOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011021278070, guid: 7a2053ad8e2dd1d408d858e4302cbda5,
+        type: 2}
+      propertyPath: listen
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011021278070, guid: 7a2053ad8e2dd1d408d858e4302cbda5,
+        type: 2}
+      propertyPath: useBakedAudio
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7a2053ad8e2dd1d408d858e4302cbda5, type: 2}
@@ -383,7 +393,7 @@ MonoBehaviour:
   high: {r: 0, g: 0.751724, b: 1, a: 0}
   low: {r: 1, g: 0.6, b: 0, a: 0}
   band: 0
-  maxInput: 33
+  maxInput: 10
 --- !u!1 &911742057
 GameObject:
   m_ObjectHideFlags: 0
@@ -493,7 +503,7 @@ MonoBehaviour:
   high: {r: 0, g: 0.751724, b: 1, a: 0}
   low: {r: 1, g: 0.6, b: 0, a: 0}
   band: 2
-  maxInput: 33
+  maxInput: 10
 --- !u!1 &1621923276
 GameObject:
   m_ObjectHideFlags: 0
@@ -690,7 +700,7 @@ MonoBehaviour:
   high: {r: 0, g: 0.751724, b: 1, a: 0}
   low: {r: 1, g: 0.6, b: 0, a: 0}
   band: 3
-  maxInput: 33
+  maxInput: 10
 --- !u!1 &1854489857
 GameObject:
   m_ObjectHideFlags: 0
