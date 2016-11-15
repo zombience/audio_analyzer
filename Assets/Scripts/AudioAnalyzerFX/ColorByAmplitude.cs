@@ -1,18 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ColorByAmplitude : MonoBehaviour 
+public class ColorByAmplitude : AudioFXBase
 {
 	#region vars
 	[SerializeField]
 	protected Color high;
 	[SerializeField]
 	protected Color low;
-	[SerializeField]
-	[Range(0,3)]
-	protected int band;
-	[SerializeField]
-	protected float maxInput = 33f;
 
 	protected Renderer rend;
 	protected Material[] mats;
@@ -29,8 +24,8 @@ public class ColorByAmplitude : MonoBehaviour
 	{
 		for(int i = 0; i < mats.Length; i++)
 		{
-			mats[i].color = Color.Lerp(low, high, AudioAnalyzer.GetScaledOutput(band, maxInput, .1f, 1f));
-		}
+			mats[i].color = Color.Lerp(low, high, bandValue);
+		}   
 		rend.materials = mats;
 	}
 	#endregion
