@@ -11,8 +11,7 @@ public class AudioAnalyzer : MonoBehaviour
 	public static float[] freqData = new float[sampleCount]; // raw output data of every analyzed sample: values between -1.0 to 1.0
 	public static float masterGain = 1f;
 
-
-	protected float mGain { get { return masterGain; } }
+	
 	[SerializeField]
 	protected int[] crossovers = new int[BANDS]{10, 80, 150, 300}; // split the spectrum into bands at each crossover point 
 	[SerializeField]
