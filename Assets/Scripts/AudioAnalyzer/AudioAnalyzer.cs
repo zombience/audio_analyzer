@@ -1,7 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.Audio;
 using System.Collections;
- 
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 [RequireComponent(typeof(AudioSource))]
 public class AudioAnalyzer : MonoBehaviour 
 {
@@ -11,9 +15,13 @@ public class AudioAnalyzer : MonoBehaviour
 	public static float[] freqData = new float[sampleCount]; // raw output data of every analyzed sample: values between -1.0 to 1.0
 	public static float masterGain = 1f;
 
+#if UNITY_EDITOR
+    [SerializeField]
+    float[] maxVals = new float[AudioAnalyzer.BANDS];
+#endif
 
-	protected float mGain { get { return masterGain; } }
-	[SerializeField]
+
+    [SerializeField]
 	protected int[] crossovers = new int[BANDS]{10, 80, 150, 300}; // split the spectrum into bands at each crossover point 
 	[SerializeField]
 	protected float[] bandGain = new float[BANDS]{250f, 2500f, 8000f, 15000f}; // multiply the amplitude of each band. higher frequencies require more boosting
@@ -89,9 +97,22 @@ public class AudioAnalyzer : MonoBehaviour
 		}
 
 		StartCoroutine(ManageBuffer());
+
+#if UNITY_EDITOR
+
+        InitWorldMeters();
+        //        SceneView.onSceneGUIDelegate += OverlayMeters;
+#endif
     }
 
-	void Update()
+    //#if UNITY_EDITOR
+    //    void OnDestroy()
+    //    {
+    //        SceneView.onSceneGUIDelegate -= OverlayMeters;
+    //    }
+    //#endif
+
+    void Update()
 	{
 		if(!mixer)
 		{
@@ -124,18 +145,33 @@ public class AudioAnalyzer : MonoBehaviour
 			isListening = !listen;
 			mixer.SetFloat("InputVolume", listen ? 0f : -80f);
 		}
-	}
-	#endregion
 
-	#region API
+
+#if UNITY_EDITOR
+        WorldMeters();
+        for (int i = 0; i < BANDS; i++)
+        {
+            maxVals[i] = Mathf.Max(maxVals[i], AudioAnalyzer.GetRawOutput(i));
+        }
+
+#endif
+    }
+#endregion
+
+#region API
 	public static float GetScaledOutput(int listenBand, float bandMax,float targetMin, float targetMax)
 	{
 		return output[listenBand].Map(0, bandMax, targetMin, targetMax);
 	}
-	#endregion
+    
+    public static float GetRawOutput(int listenBand)
+    {
+        return output[listenBand];
+    }
+#endregion
 
 
-	#region audio buffer
+#region audio buffer
 	protected void SetInputDevice(string device)
 	{
 		StopMicrophone();
@@ -200,10 +236,10 @@ public class AudioAnalyzer : MonoBehaviour
 			source.Play();
 		}
 	}
-	#endregion 
+#endregion
 
 
-	#region audio analysis
+#region audio analysis
 	/// <summary>
 	/// GetAveragedVolume returns the average volume of the entire signal
 	/// </summary>
@@ -251,8 +287,98 @@ public class AudioAnalyzer : MonoBehaviour
 					output[k] = Mathf.Abs(band[k] / bandThresholds[k]) * bandGain[k] * masterGain; 
 
 				k++;
+                AudioClip bufferClip = new AudioClip();
+                
 			}
 		}
 	}
-	#endregion
+#endregion
+
+
+#if UNITY_EDITOR
+    Transform[] meters = new Transform[4];
+    Camera c;
+    void InitWorldMeters()
+    {
+        
+        GameObject parentObj = new GameObject("meters container");
+        for(int i = 0; i < meters.Length; i++)
+        {
+            meters[i] = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
+            meters[i].position = new Vector3(0, 5000 - i, 0);
+            meters[i].localScale = new Vector3(1, 1, 1);
+            meters[i].parent = parentObj.transform;
+        }
+        c = new GameObject("meterCam", typeof(Camera)).GetComponent<Camera>();
+        c.transform.position = new Vector3(0, 5020, -40);
+        c.transform.parent = parentObj.transform;
+        c.clearFlags = CameraClearFlags.Depth;
+        c.orthographic = true;
+        c.orthographicSize = 24;
+    }
+
+
+    void WorldMeters()
+    {
+        Vector3 scale = Vector3.one;
+        for(int i = 0; i < 4; i++)
+        {
+            scale.x = AudioAnalyzer.GetRawOutput(i);
+            meters[i].localScale = scale;
+        }
+    }
+    //    void OverlayMeters(SceneView view)
+    //    {
+
+    //    }
+#endif
 }
+
+
+
+#if UNITY_EDITOR
+[CustomEditor(typeof(AudioAnalyzer))]
+public class AudioAnalyzerEditor : Editor
+{
+
+    AudioAnalyzer obj;
+    float[] maxVals = new float[AudioAnalyzer.BANDS];
+
+    void OnEnable()
+    {
+        obj = target as AudioAnalyzer;
+    }
+    
+    public override void OnInspectorGUI()
+    {
+        //if(Application.isPlaying)
+        //{
+        //    for(int i = 0; i < AudioAnalyzer.BANDS; i++)
+        //    {
+        //        maxVals[i] = Mathf.Max(maxVals[i], AudioAnalyzer.GetRawOutput(i));
+                
+        //        GUILayout.BeginHorizontal();
+        //        GUILayout.Label(string.Format("band {0} max", i));
+        //        EditorGUILayout.FloatField(maxVals[i]);
+        //        GUILayout.EndHorizontal();
+        //    }
+        //}
+        
+        //Rect bands = new Rect(0, 0, 200, 20);
+        //bands.width *= .9f;
+        //bands.x = 10;
+        //bands.y = 10;
+        //bands.height = 20;
+        //EditorGUI.ProgressBar(bands, AudioAnalyzer.GetScaledOutput(0, 10, 0, 1), "Band 0");
+        //bands.y += 20;
+        //EditorGUI.ProgressBar(bands, AudioAnalyzer.GetRawOutput(1), "Band 1");
+        //bands.y += 20;
+        //EditorGUI.ProgressBar(bands, AudioAnalyzer.GetRawOutput(2), "Band 2");
+        //bands.y += 20;
+        //EditorGUI.ProgressBar(bands, AudioAnalyzer.GetRawOutput(3), "Band 3");
+
+        base.OnInspectorGUI();
+
+    }
+}
+#endif
