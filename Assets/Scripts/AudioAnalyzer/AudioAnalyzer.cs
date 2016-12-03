@@ -36,9 +36,12 @@ public class AudioAnalyzer : MonoBehaviour
 	protected float fallRate;
 	
 	[SerializeField]
-	protected bool listen, useBakedAudio;
+	protected bool listen, listenToBuffer, useBakedAudio;
 
-	protected bool isListening; 
+    [SerializeField]
+    protected int bufferBand = 0; // which audio band should be sent to preview mixer
+
+	protected bool prevListenState, prevBufferListenState; 
 
 	protected SelectInputGUI micSelector;
 	protected AudioSource source;
@@ -68,7 +71,7 @@ public class AudioAnalyzer : MonoBehaviour
 			return;
 		}
 
-		isListening = !listen;
+		prevListenState = !listen;
 		source = GetComponent<AudioSource>();
 		
 		mixer.SetFloat("InputVolume", listen ? 0f : -80f);
@@ -100,7 +103,7 @@ public class AudioAnalyzer : MonoBehaviour
 
 #if UNITY_EDITOR
 
-        InitWorldMeters();
+        InitDebugItems();
         //        SceneView.onSceneGUIDelegate += OverlayMeters;
 #endif
     }
@@ -114,7 +117,7 @@ public class AudioAnalyzer : MonoBehaviour
 
     void Update()
 	{
-		if(!mixer)
+        if(!mixer)
 		{
 			Debug.LogError("no mixer found on audio analyzer object: mixer must be set in inspector");
 			return;
@@ -140,11 +143,32 @@ public class AudioAnalyzer : MonoBehaviour
 
 		// unity will no longer process audio on a muted AudioSource
 		// the mixer must be muted instead
-		if(listen == isListening)
+		if(listen == prevListenState)
 		{
-			isListening = !listen;
+			prevListenState = !listen;
 			mixer.SetFloat("InputVolume", listen ? 0f : -80f);
+            if (listen && listenToBuffer)
+            {
+                listenToBuffer = false;
+                prevBufferListenState = true;
+                mixer.SetFloat("BufferVolume", -80f);
+            }
 		}
+
+        if(listenToBuffer == prevBufferListenState)
+        {
+            prevBufferListenState = !listenToBuffer;
+            if(listenToBuffer && listen)
+            {
+                listen = false;
+                prevListenState = true;
+                mixer.SetFloat("InputVolume", -80f);
+            }
+
+            mixer.SetFloat("BufferVolume", listenToBuffer ? 0f : -80f); 
+        }
+
+        
 
 
 #if UNITY_EDITOR
@@ -261,44 +285,80 @@ public class AudioAnalyzer : MonoBehaviour
 		source.GetSpectrumData(freqData, 0, FFTWindow.Hamming);
 
 		int k = 0;
-		float[] bandThresholds = new float[BANDS];
+		int[] bandThresholds = new int[BANDS];
 		for(int i = 0; i < BANDS; i++)
 		{
-			float min = (i > 0 ? crossovers[i-1] : 0); // set the threshold for each band
+			int min = (i > 0 ? crossovers[i-1] : 0); // set the threshold for each band
 			bandThresholds[i] = crossovers[i] - min; 
 			band[i] = 0f;
-		}
+#if UNITY_EDITOR
+            if(listenToBuffer && i == bufferBand)
+            {
+                if(bufferSamples.Length != bandThresholds[i])
+                {
+                    bufferSamples = new float[bandThresholds[i]];
+                }
+            }
 
-		for (int i = 0; i < freqData.Length; i++)
+        }
+
+        // IN PROGRESS TODO:
+        // trying to pack a buffer with sections of freqData to play back the results of 
+        // separating bands, so i can hear what i'm analyzing
+
+        if(listenToBuffer)
+        {
+            int freqStart = crossovers[bufferBand] - crossovers[Mathf.Max(bufferBand - 1, 0)];
+            int freqEnd = bandThresholds[bufferBand];
+            Debug.Log("freq start, end, len: " + freqStart + " " + freqEnd + " " + (freqEnd - freqStart));
+            for(int i = 0; i < freqEnd - freqStart; i++)
+            {
+                bufferSamples[i] = freqData[i + freqStart];
+            }
+            bufferClip = new AudioClip();
+            bufferClip.SetData(bufferSamples, 0);
+        }
+#else 
+        }
+#endif
+
+        for (int i = 0; i < freqData.Length; i++)
 		{
 			if (k > BANDS - 1)
 				break;
 
 			band[k] += freqData[i]; // sum amplitude of each frequency per band 
-
+            
 			if (i > crossovers[k])
 			{
 				if(easeAmplitude)
 				{
-					float bandAmp = Mathf.Abs(band[k] / bandThresholds[k]) * bandGain[k]; // divide total amplitude by total number of datapoints = average amplitdue for band
+					float bandAmp = Mathf.Abs(band[k] / (float)bandThresholds[k]) * bandGain[k]; // divide total amplitude by total number of datapoints = average amplitdue for band
 					output[k] = Mathf.Lerp(output[k], bandAmp * masterGain, bandAmp * (bandAmp > output[k] ? climbRate : fallRate)); // if analyzed amplitude is larger than previous amplitude, ease to new amplitude at climbRate, otherwise ease at fallRate
 				}
 				else
-					output[k] = Mathf.Abs(band[k] / bandThresholds[k]) * bandGain[k] * masterGain; 
+					output[k] = Mathf.Abs(band[k] / (float)bandThresholds[k]) * bandGain[k] * masterGain; 
 
 				k++;
-                AudioClip bufferClip = new AudioClip();
+                
                 
 			}
 		}
 	}
+
+#if UNITY_EDITOR
+    AudioSource bufferSource;
+    AudioClip bufferClip = new AudioClip();
+    float[] bufferSamples = new float[1];
+#endif
+
 #endregion
 
 
 #if UNITY_EDITOR
     Transform[] meters = new Transform[4];
     Camera c;
-    void InitWorldMeters()
+    void InitDebugItems()
     {
         
         GameObject parentObj = new GameObject("meters container");
@@ -315,6 +375,9 @@ public class AudioAnalyzer : MonoBehaviour
         c.clearFlags = CameraClearFlags.Depth;
         c.orthographic = true;
         c.orthographicSize = 24;
+
+        bufferSource = GetComponentInChildren<AudioSource>();
+        bufferSource.clip = bufferClip;
     }
 
 
@@ -351,6 +414,8 @@ public class AudioAnalyzerEditor : Editor
     
     public override void OnInspectorGUI()
     {
+
+
         //if(Application.isPlaying)
         //{
         //    for(int i = 0; i < AudioAnalyzer.BANDS; i++)
