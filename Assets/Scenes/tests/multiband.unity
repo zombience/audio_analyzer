@@ -280,12 +280,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16920f16ecee58b42b98647f30dfd1ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  band:
-    cutoff: 0.5
-    q: 3.04
-    frequency: 0
-    bandF: 0
-    dataCutoff: 0
+  bands:
+  - cutoff: 0.449
+    q: 5.09
+    bandGain: 1
+    mute: 0
+    debugDB: 0
 --- !u!1 &1816773147
 GameObject:
   m_ObjectHideFlags: 0

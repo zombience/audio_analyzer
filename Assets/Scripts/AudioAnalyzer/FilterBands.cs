@@ -40,23 +40,29 @@ using System.Collections;
 public class FilterBands : MonoBehaviour
 {
     [SerializeField]
-    public BandPassFilter band;
+    public BandPassFilter[] bands;
 
     void Awake()
     {
         Update();
     }
 
+
     void Update()
     {
-        
-        band.UpdateBand();
-        
+        for (int i = 0; i < bands.Length; i++)
+        {
+            bands[i].UpdateBand(); 
+        }
     }
+        
     
     void OnAudioFilterRead(float[] data, int channels)
     {
-        data = band.ApplyFilter(data, channels);
+        for (int i = 0; i < bands.Length; i++)
+        {
+            bands[i].ApplyFilter(data, channels); 
+        }
     }
 }
 
@@ -65,48 +71,109 @@ public class FilterBands : MonoBehaviour
 [System.Serializable]
 public class BandPassFilter
 {
+
+    //TODO: create property drawer that translates cutoff to cutOffFrequency in editor not in play mode
     [SerializeField]
     [Range(0.0f, 1.0f)]
     float cutoff = 0.5f;
 
     [SerializeField]
     [Range(1.0f, 10.0f)]
-    float q = 1.0f;
+    float q = 1.0f, bandGain = 1.0f;
+
+    [SerializeField]
+    bool mute;
+
 
     // Cutoff frequency in Hz
     float cutOffFrequency
     {
         get { return Mathf.Pow(2, 10 * cutoff - 10) * 15000; }
     }
-
+    
     // DSP variables
     float vF, vD, 
         vZ1, vZ2, vZ3;
+    
+    const float zeroOffset = 1.5849e-13f;
+    const float refLevel = 0.70710678118f; // 1/sqrt(2)
+    const float minDB = -60.0f;
+
+    float squareSum;
+    int sampleCount;
+
+
+    protected float dbLevel = -60.0f;
+
+    public float DbLevel
+    {
+        get { return dbLevel; }
+    }
+
+    public float debugDB;
+    
     
     public void UpdateBand()
     {
         var f = 2 / 1.85f * Mathf.Sin(Mathf.PI * cutOffFrequency / AudioSettings.outputSampleRate);
         vD = 1 / q;
         vF = (1.85f - 0.75f * vD * f) * f;
+        if (sampleCount < 1) return;
+
+        var rms = Mathf.Min(1.0f, Mathf.Sqrt(squareSum / sampleCount));
+        dbLevel = 20.0f * Mathf.Log10(rms / refLevel + zeroOffset);
+
+        squareSum = 0;
+        sampleCount = 0;
+
+        debugDB = DbLevel;
+
     }
 
-    public float[] ApplyFilter(float[] audioData, int channels)
+    public void ApplyFilter(float[] audioData, int channels)
     {
+        sampleCount += audioData.Length / channels;
         for (var i = 0; i < audioData.Length; i += channels)
         {
             var si = audioData[i];
+            
+            squareSum += si * si;
 
             var _vZ1 = 0.5f * si;
             var _vZ3 = vZ2 * vF + vZ3;
             var _vZ2 = (_vZ1 + vZ1 - _vZ3 - vZ2 * vD) * vF + vZ2;
-
-            for (var c = 0; c < channels; c++)
-                audioData[i + c] = _vZ2;
+            
+            if(mute)
+            {
+                audioData[i] = 0;
+            }
+            else
+            {
+                for (var c = 0; c < channels; c++)
+                {
+                    audioData[i + c] = _vZ2;
+                }
+            }
 
             vZ1 = _vZ1;
             vZ2 = _vZ2;
             vZ3 = _vZ3;
         }
-        return audioData;
+    }
+    
+
+    void OnAudioFilterRead(float[] data, int channels)
+    {
+        for (var i = 0; i < data.Length; i += channels)
+        {
+            var level = data[i];
+            squareSum += level * level;
+        }
+
+        sampleCount += data.Length / channels;
+
+        if (mute)
+            for (var i = 0; i < data.Length; i++)
+                data[i] = 0;
     }
 }

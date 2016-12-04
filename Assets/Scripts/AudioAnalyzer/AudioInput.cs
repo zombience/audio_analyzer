@@ -49,6 +49,9 @@ public class AudioInput : MonoBehaviour
         StartInput();
     }
         
+    // TODO NEXT:
+    // implement baked vs. realtime audio
+
     void OnApplicationPause(bool paused)
     {
         if (paused)
