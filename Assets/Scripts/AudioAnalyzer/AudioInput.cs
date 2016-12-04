@@ -37,9 +37,15 @@ using UnityEditor;
 [RequireComponent(typeof(AudioSource))]
 public class AudioInput : MonoBehaviour
 {
+
+
     AudioSource audioSource;
 
-    public float estimatedLatency { get; protected set; }
+    [SerializeField]
+    bool useBakedAudio;
+
+    [SerializeField]
+    AudioClip clip;
 
     void Awake()
     {
@@ -48,9 +54,6 @@ public class AudioInput : MonoBehaviour
         audioSource.loop = true;
         StartInput();
     }
-        
-    // TODO NEXT:
-    // implement baked vs. realtime audio
 
     void OnApplicationPause(bool paused)
     {
@@ -58,7 +61,7 @@ public class AudioInput : MonoBehaviour
         {
             audioSource.Stop();
             Microphone.End(null);
-            audioSource.clip = null;
+            if(!useBakedAudio) audioSource.clip = null;
         }
         else
         {
@@ -69,25 +72,29 @@ public class AudioInput : MonoBehaviour
     void StartInput()
     {
         var sampleRate = AudioSettings.outputSampleRate;
-
-        // Create a clip which is assigned to the default microphone.
-        audioSource.clip = Microphone.Start(null, true, 1, sampleRate);
-
-        if (audioSource.clip != null)
+        if(!useBakedAudio)
         {
-            // Wait until the microphone gets initialized.
-            int delay = 0;
-            while (delay <= 0) delay = Microphone.GetPosition(null);
+            // Create a clip which is assigned to the default microphone.
+            audioSource.clip = Microphone.Start(null, true, 1, sampleRate);
 
-            // Start playing.
-            audioSource.Play();
+            if (audioSource.clip != null)
+            {
+                // Wait until the microphone gets initialized.
+                int delay = 0;
+                while (delay <= 0) delay = Microphone.GetPosition(null);
 
-            // Estimate the latency.
-            estimatedLatency = (float)delay / sampleRate;
+                // Start playing.
+                audioSource.Play();
+            }
+            else
+            {
+                Debug.LogWarning("AudioInput: Initialization failed.");
+            }
         }
         else
         {
-            Debug.LogWarning("AudioInput: Initialization failed.");
+            audioSource.clip = clip;
+            audioSource.Play();
         }
     }
 }
@@ -97,11 +104,25 @@ public class AudioInput : MonoBehaviour
 [CustomEditor(typeof(AudioInput))]
 public class AudioInputEditor : Editor
 {
+    AudioInput obj;
+
+    SerializedProperty useBakedAudio;
+    SerializedProperty clip;
+
+    void OnEnable()
+    {
+        obj = target as AudioInput;
+        useBakedAudio = serializedObject.FindProperty("useBakedAudio");
+        clip = serializedObject.FindProperty("clip");
+    }
+
     public override void OnInspectorGUI()
     {
-        // hide the inspector
+        serializedObject.Update();
+        EditorGUILayout.PropertyField(useBakedAudio, new GUIContent("use baked audio"));
+        EditorGUILayout.PropertyField(clip, new GUIContent("audio clip"));
+        serializedObject.ApplyModifiedProperties();
     }
 }
-
 #endif
 
