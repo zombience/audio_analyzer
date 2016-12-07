@@ -5,29 +5,31 @@ public class EmitByAmplitude : AudioParticleBase
 {
 
     [SerializeField]
-    protected int emitCount = 100;
+    protected int emitCount = 10;
 
     [SerializeField]
-    protected float threshold = 5f, emissionRateMod = 10f,
-        // hysteresis is the value below which particles over vulnerableAge will be killed
-        hysteresis = 4f, 
-        vulnerableAge = .5f;
+    protected float threshold = 5f, pauseTime = 2f;
+    float curTime;
 
     protected bool canTrigger = true;
 
+    protected override void Start()
+    {
+        base.Start();
+        em.enabled = false;
+        psMain.loop = false;
+    }
+        
     protected override void ProcessParticles()
     {
-        if(canTrigger && bandValue > threshold)
+        
+        if(curTime < 0 && bandValue > threshold)
         {
+            curTime = pauseTime;
             ps.Emit(emitCount);
-            canTrigger = false;
         }
 
-        if(!canTrigger)
-        {
-            canTrigger = bandValue < hysteresis;
-        }
-
+        curTime -= Time.deltaTime;
         //if (particles.Length != ps.maxParticles) particles = new ParticleSystem.Particle[ps.maxParticles];
         //int count = ps.GetParticles(particles);
 

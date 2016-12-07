@@ -8,10 +8,6 @@ public class MoveByAmplitude : AudioFXBase
 
 	protected Vector3 origin;
 
-
-    public float debugRawLevel, debugInputLevel;
-    
-
 	#region Unity Methods
 	void Start ()
 	{
@@ -21,8 +17,6 @@ public class MoveByAmplitude : AudioFXBase
 	void Update () 
 	{
 		transform.position = origin + (direction * bandValue);
-        debugRawLevel = AudioAnalyzer.GetRawOutput(band);
-        debugInputLevel = AudioAnalyzer.GetScaledOutput(band, minOutput, maxOutput);
 	}
 	#endregion
 }

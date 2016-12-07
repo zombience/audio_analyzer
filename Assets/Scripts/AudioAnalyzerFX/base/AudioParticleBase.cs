@@ -4,16 +4,17 @@ using System.Collections;
 [RequireComponent(typeof(ParticleSystem))]
 public class AudioParticleBase : AudioFXBase
 {
-
     protected ParticleSystem ps;
     protected ParticleSystem.EmissionModule em;
+    protected ParticleSystem.MainModule psMain;
     protected ParticleSystem.Particle[] particles;
 
     protected virtual void Start()
     {
         ps = GetComponent<ParticleSystem>();
         em = ps.emission;
-        particles = new ParticleSystem.Particle[ps.maxParticles];
+        psMain = ps.main;
+        particles = new ParticleSystem.Particle[ps.main.maxParticles];
     }
 
     protected virtual void Update()
