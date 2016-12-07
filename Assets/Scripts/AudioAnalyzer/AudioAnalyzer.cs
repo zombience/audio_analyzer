@@ -10,12 +10,12 @@ using UnityEditor;
 public class AudioAnalyzer : MonoBehaviour 
 {
 
-    static FilterBands bands;
+    static EQBands bands;
 
 	#region Unity Methods
 	void Awake() 
 	{
-        bands = FindObjectOfType<FilterBands>();
+        bands = FindObjectOfType<EQBands>();
         if(!bands)
         {
             throw new System.NullReferenceException("Audio Analyzer requires FilterBands to exist on an audio source or audio listener in the scene");
@@ -37,7 +37,7 @@ public class AudioAnalyzer : MonoBehaviour
     /// <returns></returns>
 	public static float GetScaledOutput(int listenBand, float targetMin, float targetMax)
 	{
-		return bands.GetBandOutput(listenBand).Map(-60, 0, targetMin, targetMax);
+        return bands.GetScaledOutput(listenBand, targetMin, targetMax);
 	}
     
     /// <summary>
@@ -45,9 +45,9 @@ public class AudioAnalyzer : MonoBehaviour
     /// </summary>
     /// <param name="listenBand"></param>
     /// <returns></returns>
-    public static float GetRawDb(int listenBand)
+    public static float GetRawOutput(int listenBand)
     {
-        return bands.GetBandOutput(listenBand);
+        return bands.GetRawOutput(listenBand);
     }
 #endregion
 

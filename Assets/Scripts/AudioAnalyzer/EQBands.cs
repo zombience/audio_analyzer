@@ -41,18 +41,31 @@ using System.Linq;
 using UnityEditor;
 #endif
 
-public class FilterBands : MonoBehaviour
+public class EQBands : MonoBehaviour
 {
     [SerializeField]
     bool muteAudio = true;
 
     [SerializeField]
     BandPassFilter[] bands;
-    
+
+    // for use with custom editor: NOT for use in builds
+#if UNITY_EDITOR
+    public BandPassFilter[] editorBands { get { return bands; } }
+#endif
+
+    [SerializeField]
+    protected AnimationCurve audioCurve = AnimationCurve.Linear(0, 0, 1, 1);
+
     void Awake()
     {
-        Update();
+        BandPassFilter.audioCurve = audioCurve;
+        for (int i = 0; i < bands.Length; i++)
+        {
+            bands[i].Init();
+        }
     }
+
 
 
     void Update()
@@ -72,10 +85,29 @@ public class FilterBands : MonoBehaviour
         }
     }
 
-    public float GetBandOutput(int band)
+    /// <summary>
+    /// poll for raw output of desired band in dB
+    /// if requested band does not exist, next highest band will be returned
+    /// </summary>
+    /// <param name="band"></param>
+    /// <returns></returns>
+    public float GetRawOutput(int band)
     {
         if (band >= bands.Length) band = bands.Length - 1;
-        return bands[band].dB;
+        return bands[band].level;
+    }
+
+    /// <summary>
+    /// poll band and request specific scale output, e.g. 0.0-1.0
+    /// </summary>
+    /// <param name="band"></param>
+    /// <param name="targetMin">the desired lower bound</param>
+    /// <param name="band">the desired upper bound</param>
+    /// <returns></returns>
+    public float GetScaledOutput(int band, float targetMin, float targetMax)
+    {
+        if (band >= bands.Length) band = bands.Length - 1;
+        return bands[band].level.Map(0, 1, targetMin, targetMax);
     }
 
     [System.Serializable]
@@ -93,12 +125,17 @@ public class FilterBands : MonoBehaviour
         float cutoff = 0.5f;
 
         [SerializeField]
-        [Range(1.0f, 10.0f)]
+        [Range(1.0f, 30.0f)]
         float q = 1.0f; 
 
         [SerializeField]
         [Range(0.1f, 10.0f)]
         float bandGain = 1.0f;
+
+        [SerializeField, Range(0.05f, 1.0f)]
+        float sensitivity = .95f;
+
+        public static AnimationCurve audioCurve;
 
         // Cutoff frequency in Hz
         [SerializeField]
@@ -118,15 +155,41 @@ public class FilterBands : MonoBehaviour
         const float refLevel = 0.70710678118f; // 1/sqrt(2)
         const float minDB = -60.0f;
 
-        float squareSum;
+        float squareSum, _level,
+            peak, rawInput;
+
+        [SerializeField]
+        protected float headroom = 1.0f, 
+            dynamicRange = 17.0f, 
+            lowerBound = -60.0f,
+            offset = 0;
+
+        // for use with editor only
+#if UNITY_EDITOR
+        public float Peak { get { return peak; } }
+        public float RawInput { get { return rawInput; } }
+        public float LowerBound { get { return lowerBound; } }
+        public float DynamicRange { get { return dynamicRange; } }
+        public float Headroom { get { return headroom; } }
+        public float Gain { get { return bandGain; } }
+        public float Offset { get { return offset; } }
+#endif
+
         int sampleCount;
 
 
         protected float dbLevel = -60.0f;
 
-        public float dB
+        public float level
         {
-            get { return dbLevel; }
+            get { return _level; }
+        }
+
+        public void Init()
+        {
+            peak = lowerBound + dynamicRange + headroom;
+            rawInput = -1e12f;
+            UpdateBand();
         }
 
         public void UpdateBand()
@@ -139,10 +202,26 @@ public class FilterBands : MonoBehaviour
             var rms = Mathf.Min(1.0f, Mathf.Sqrt(squareSum / sampleCount));
             dbLevel = 20.0f * Mathf.Log10(rms / refLevel + zeroOffset);
 
+            float input = 0.0f;
+
             squareSum = 0;
             sampleCount = 0;
+            rawInput = dbLevel;
 
+            peak = Mathf.Max(peak, Mathf.Max(rawInput, lowerBound + dynamicRange + headroom));
+
+            // Normalize the input level.
+            input = (rawInput - peak + headroom + dynamicRange) / dynamicRange;
+            input = audioCurve.Evaluate(Mathf.Clamp01(input));
+
+            if (sensitivity < 1.0f)
+            {
+                var coeff = Mathf.Pow(sensitivity, 2.3f) * -128;
+                input -= (input - _level) * Mathf.Exp(coeff * Time.deltaTime);
+            }
+            _level = input;
         }
+
 
         public void ApplyFilter(float[] audioData, int channels, bool mute)
         {
@@ -154,13 +233,13 @@ public class FilterBands : MonoBehaviour
                 var _vZ1 = 0.5f * si;
                 var _vZ3 = vZ2 * vF + vZ3;
                 var _vZ2 = (_vZ1 + vZ1 - _vZ3 - vZ2 * vD) * vF + vZ2;
-            
-                squareSum += (_vZ2 * _vZ2) * bandGain;
+
+                squareSum += (_vZ2 * _vZ2);
                 if(listen)
                 {
                     for (int c = 0; c < channels; c++)
                     {
-                        audioData[i + c] = _vZ2 * bandGain;
+                        audioData[i + c] = _vZ2;
                     }
                 }
             
@@ -185,32 +264,47 @@ public class FilterBands : MonoBehaviour
 
 #if UNITY_EDITOR
 
-[CustomEditor(typeof(FilterBands))]
-class FilterBandsEditor : Editor
+[CustomEditor(typeof(EQBands))]
+class EQBandsEditor : Editor
 {
 
     SerializedProperty bands;
     SerializedProperty mute;
+    SerializedProperty audioCurve;
 
     Color bgColor;
-
-    FilterBands obj;
-    SerializedObject tObj;
     
+    Texture2D[] barTextures;
+
+    EQBands.BandPassFilter[] filters;
+
     private void OnEnable()
     {
-        obj = target as FilterBands;    
         bands = serializedObject.FindProperty("bands");
         mute = serializedObject.FindProperty("muteAudio");
+        audioCurve = serializedObject.FindProperty("audioCurve");
         bgColor = GUI.backgroundColor;
+        filters = (target as EQBands).editorBands;
+    }
+
+
+    void OnDisable()
+    {
+        if (barTextures != null)
+        {
+            // Destroy the bar textures.
+            foreach (var texture in barTextures)
+                DestroyImmediate(texture);
+            barTextures = null;
+        }
     }
 
     public override void OnInspectorGUI()
     {
-        //tObj.Update();
-        serializedObject.ApplyModifiedProperties();
-
+        serializedObject.Update();
         EditorGUILayout.PropertyField(mute);
+        EditorGUILayout.PropertyField(audioCurve);
+
         int bandCount = bands.arraySize;
 
         GUILayout.BeginHorizontal();
@@ -242,7 +336,11 @@ class FilterBandsEditor : Editor
             SerializedProperty cutoff = band.FindPropertyRelative("cutoff");
             SerializedProperty q = band.FindPropertyRelative("q");
             SerializedProperty gain = band.FindPropertyRelative("bandGain");
-            SerializedProperty hz = band.FindPropertyRelative("cutoff");
+
+            SerializedProperty headroom = band.FindPropertyRelative("headroom");
+            SerializedProperty dynamicRange = band.FindPropertyRelative("dynamicRange");
+            SerializedProperty lowerBound = band.FindPropertyRelative("lowerBound");
+            SerializedProperty sensitivity = band.FindPropertyRelative("sensitivity");
 
             GUI.backgroundColor = Color.yellow;
             EditorGUILayout.PropertyField(listen);
@@ -250,7 +348,7 @@ class FilterBandsEditor : Editor
             GUI.backgroundColor = Color.cyan;
             GUILayout.BeginHorizontal();
             GUILayout.Label("cutoff in hz: ", GUILayout.Width(80));
-            EditorGUILayout.FloatField(Mathf.Pow(2, 10 * hz.floatValue - 10) * 15000);
+            EditorGUILayout.FloatField(Mathf.Pow(2, 10 * cutoff.floatValue - 10) * 15000);
             GUILayout.EndHorizontal();
 
             GUI.backgroundColor = Color.magenta;
@@ -258,10 +356,89 @@ class FilterBandsEditor : Editor
             EditorGUILayout.PropertyField(q);
             EditorGUILayout.PropertyField(gain);
 
-            if(i < bands.arraySize - 1) GUILayout.Space(40);
+            EditorGUILayout.PropertyField(headroom);
+            EditorGUILayout.PropertyField(dynamicRange);
+            EditorGUILayout.PropertyField(lowerBound);
+
+            GUILayout.Space(20);
+
+            if(Application.isPlaying) DrawInputLevelBars(filters[i]);
+
+            if (i < bands.arraySize - 1) GUILayout.Space(40);
         }
-        
+        EditorUtility.SetDirty(target);
         serializedObject.ApplyModifiedProperties();
+    }
+
+    // Make a texture which contains only one pixel.
+    Texture2D NewBarTexture(Color color)
+    {
+        var texture = new Texture2D(1, 1);
+        texture.SetPixel(0, 0, color);
+        texture.Apply();
+        return texture;
+    }
+
+    // Draw the input level bar.
+    void DrawInputLevelBars(EQBands.BandPassFilter band)
+    {
+        if (barTextures == null)
+        {
+            // Make textures for drawing level bars.
+            barTextures = new Texture2D[] {
+                NewBarTexture(new Color(55.0f / 255, 53.0f / 255, 45.0f / 255)),
+                NewBarTexture(new Color(250.0f / 255, 249.0f / 255, 248.0f / 255)),
+                NewBarTexture(new Color(110.0f / 255, 192.0f / 255, 91.0f / 255, 0.8f)),
+                NewBarTexture(new Color(226.0f / 255, 0, 7.0f / 255, 0.8f)),
+                NewBarTexture(new Color(249.0f / 255, 185.0f / 255, 22.0f / 255))
+            };
+        }
+
+        // Get a rectangle as a text field and fill it.
+        var rect = GUILayoutUtility.GetRect(18, 16, "TextField");
+        GUI.DrawTexture(rect, barTextures[0]);
+
+        // Draw the raw input bar.
+        var temp = rect;
+        temp.width *= Mathf.Clamp01((band.RawInput - band.LowerBound) / (3 - band.LowerBound));
+        GUI.DrawTexture(temp, barTextures[1]);
+
+        // Draw the dynamic range.
+        temp.x += rect.width * (band.Peak - band.LowerBound - band.DynamicRange - band.Headroom) / (3 - band.LowerBound);
+        temp.width = rect.width * band.DynamicRange / (3 - band.LowerBound);
+        GUI.DrawTexture(temp, barTextures[2]);
+
+        // Draw the headroom.
+        temp.x += temp.width;
+        temp.width = rect.width * band.Headroom / (3 - band.LowerBound);
+        GUI.DrawTexture(temp, barTextures[3]);
+
+        // Display the peak level value.
+        EditorGUI.LabelField(rect, "Peak: " + band.Peak.ToString("0.0") + " dB");
+
+        // Draw the gain level.
+        DrawLevelBar("Gain", band.Gain, barTextures[0], barTextures[1]);
+
+        // Draw the offset level.
+        DrawLevelBar("Offset", band.Offset, barTextures[0], barTextures[1]);
+
+        // Draw the output level.
+        DrawLevelBar("Out", band.level, barTextures[0], barTextures[4]);
+    }
+
+    void DrawLevelBar(string label, float value, Texture bg, Texture fg)
+    {
+        // Get a rectangle as a text field and fill it.
+        var rect = GUILayoutUtility.GetRect(18, 16, "TextField");
+        GUI.DrawTexture(rect, bg);
+
+        // Draw a level bar.
+        var temp = rect;
+        temp.width *= value;
+        GUI.DrawTexture(temp, fg);
+
+        // Display the level value in percentage.
+        EditorGUI.LabelField(rect, label + ": " + (value * 100).ToString("0.0") + " %");
     }
 }
 #endif
