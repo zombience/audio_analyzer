@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ColorByAmplitude : AudioFXBase
+public class ColorByAmplitude : AFXBase
 {
 	#region vars
 	[SerializeField]

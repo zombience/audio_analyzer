@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class SpawnByAmplitude : AudioFXBase 
+public class SpawnByAmplitude : AFXBase 
 {
     
 	[SerializeField]

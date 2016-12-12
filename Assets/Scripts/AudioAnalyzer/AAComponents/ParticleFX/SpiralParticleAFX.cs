@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ParticleChaser : AudioParticleBase
+public class SpiralParticleAFX : ParticleAFXBase
 {
 
     [SerializeField]
     protected float speed = 2f, threshold = .5f, spiralForce = .2f;
+
+    [SerializeField]
+    Vector3 spiralOffset = Vector3.zero;
 
     protected override void ProcessParticles()
     {
@@ -20,8 +23,8 @@ public class ParticleChaser : AudioParticleBase
             Vector3 dir = Vector3.zero;
             dir = (particles[target].position - particles[i].position).normalized;
             Vector3 cross = Vector3.Cross(particles[i].position, dir);
-            particles[i].position += dir * speed;
-            particles[i].position += cross * spiralForce;
+            particles[i].position += (dir + spiralOffset) * speed;
+            particles[i].position += (cross) * spiralForce;
         }
 
         ps.SetParticles(particles, pCount);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-public class AudioAnimationBase : AudioFXBase
+public class AnimationAFXBase : AFXBase
 {
 
     protected Animator anim;

@@ -3,7 +3,7 @@ using System.Collections;
 
 
 
-public class WanderByAmplitude : AudioFXBase
+public class WanderByAmplitude : AFXBase
 {
 
     [SerializeField]

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EmitByAmplitude : AudioParticleBase
+public class EmitParticleAFX : ParticleAFXBase
 {
 
     [SerializeField]

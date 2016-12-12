@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RotateByAmplitude : AudioFXBase
+public class RotateByAmplitude : AFXBase
 {	
 	#region vars
 	[SerializeField]

@@ -2,7 +2,7 @@
 using System.Collections;
 
 [RequireComponent(typeof(ParticleSystem))]
-public class AudioParticleBase : AudioFXBase
+public class ParticleAFXBase : AFXBase
 {
     protected ParticleSystem ps;
     protected ParticleSystem.EmissionModule em;

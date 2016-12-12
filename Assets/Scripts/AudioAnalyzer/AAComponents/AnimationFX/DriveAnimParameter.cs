@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class DriveAnimParameter : AudioAnimationBase
+public class DriveAnimParameter : AnimationAFXBase
 {
 
     [SerializeField]

@@ -3,7 +3,7 @@ using System.Collections;
 
 
 
-public class ScaleByAmplitude : AudioFXBase
+public class ScaleByAmplitude : AFXBase
 {
 
     [SerializeField]
