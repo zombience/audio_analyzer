@@ -69,7 +69,9 @@ this is included as a debug-feature only. it allows for playing the analyzed aud
 DISCALIMER: 
 if you are using realtime input, there is currently a gap when the realtime buffer is filled as the buffers are swapped, and will be perceived as a pop or a gap in audio, depending on the speed of your system. 
 
-i will address this issue in a future update.
+~~i will address this issue in a future update.~~
+I am planning an update that will address this issue, but it will be a major API-breaking update. 
+Several issues will be addressed, and a new audio-analysis core will be implemented along with various other improvements. 
 
 #### Mixer ####
 The main mixer that contains the output group that the attached Audio Source has assigned. 
