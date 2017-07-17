@@ -1,16 +1,19 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class DriveAnimParameter : AnimationAFXBase
+namespace AudioAnalyzer
 {
+	public class DriveAnimParameter : AnimationAFXBase
+	{
 
-    [SerializeField]
-    protected string targetParam = "animSpeed";
-    
-        
-    protected override void Update()
-    {
-        anim.SetFloat(targetParam, bandValue);
-        
-    }
+		[SerializeField]
+		protected string targetParam = "animSpeed";
+
+
+		protected void Update()
+		{
+			anim.SetFloat(targetParam, band.bandValue);
+
+		}
+	}
 }

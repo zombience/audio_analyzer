@@ -23,6 +23,7 @@ public class SelectInputGUI : MonoBehaviour
 			if (GUI.Button(r, Microphone.devices[i]))
 				callback(Microphone.devices[i]);
 			r = new Rect(r.xMin + spacing, r.yMin, r.width, r.height);
+            
 		}
 	}
 
