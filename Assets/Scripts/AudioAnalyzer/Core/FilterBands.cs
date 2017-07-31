@@ -43,8 +43,6 @@ using UnityEditor;
 
 namespace AudioAnalyzer
 {
-
-
 	public class FilterBands : MonoBehaviour
 	{
 		[SerializeField]
@@ -163,7 +161,8 @@ namespace AudioAnalyzer
 				peak, rawInput;
 
 			[SerializeField]
-			protected float headroom = 1.0f,
+			protected float 
+				headroom = 1.0f,
 				dynamicRange = 17.0f,
 				lowerBound = -60.0f,
 				offset = 0;

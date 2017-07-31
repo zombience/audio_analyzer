@@ -41,13 +41,14 @@ namespace AudioAnalyzer.EditorUtilities
 		}
 	}
 	
-	public class TestsInspectorBase<T> 	: Editor where T : MonoBehaviour
+	public class InspectorBase<T> : Editor where T : MonoBehaviour
 	{
 
 		protected T obj;
-		protected GUIStyle style;
 		protected float inc = .1f;
+		protected GUIStyle style;
 		protected Color bg = Color.cyan;
+		protected bool showDefaultInspector = true;
 
 		protected Context 
 			play	= Context.PLAYING,
@@ -63,7 +64,10 @@ namespace AudioAnalyzer.EditorUtilities
 
 		public override void OnInspectorGUI()
 		{
-			base.OnInspectorGUI();
+			if (showDefaultInspector)
+			{
+				base.OnInspectorGUI();
+			}
 			bg = Color.cyan;
 		}
 
@@ -106,6 +110,12 @@ namespace AudioAnalyzer.EditorUtilities
 				default:
 					return false;
 			}
+		}
+
+		static public void Action(this Context c, System.Action action)
+		{
+			if (!c.IsCurrent()) return;
+			if (action != null) action();
 		}
 
 		static public void Button(this Context c, string label, System.Action action = null)

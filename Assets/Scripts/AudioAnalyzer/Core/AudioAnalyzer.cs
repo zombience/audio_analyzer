@@ -2,7 +2,7 @@
 
 namespace AudioAnalyzer
 {
-	[RequireComponent(typeof(AudioSource))]
+	[RequireComponent(typeof(AudioSource), typeof(FilterBands))]
 	public class AudioAnalyzer : MonoBehaviour
 	{
 		static FilterBands bands;
@@ -10,11 +10,7 @@ namespace AudioAnalyzer
 		#region Unity Methods
 		void Awake()
 		{
-			bands = FindObjectOfType<FilterBands>();
-			if (!bands)
-			{
-				throw new System.NullReferenceException("Audio Analyzer requires FilterBands to exist on an audio source or audio listener in the scene");
-			}
+			bands = GetComponent<FilterBands>();
 		}
 
 		#endregion
@@ -26,23 +22,23 @@ namespace AudioAnalyzer
 		/// values are scaled from -60dB min 0dB max (digital scale)
 		/// if input values should fall outside that range, output values will not be clamped
 		/// </summary>
-		/// <param name="listenBand">if band is out of range, value of the next lowest band will be returned</param>
+		/// <param name="band">if band is out of range, value of the next lowest band will be returned</param>
 		/// <param name="targetMin">output minimum</param>
 		/// <param name="targetMax">output maximum</param>
 		/// <returns></returns>
-		public static float GetScaledOutput(int listenBand, float targetMin, float targetMax)
+		static public float GetScaledOutput(int band, float targetMin, float targetMax)
 		{
-			return bands.GetScaledOutput(listenBand, targetMin, targetMax);
+			return bands.GetScaledOutput(band, targetMin, targetMax);
 		}
 
 		/// <summary>
 		/// GetRawDb will return unscaled dB output of band analysis
 		/// </summary>
-		/// <param name="listenBand"></param>
+		/// <param name="band"></param>
 		/// <returns></returns>
-		public static float GetRawOutput(int listenBand)
+		static public float GetRawOutput(int band)
 		{
-			return bands.GetRawOutput(listenBand);
+			return bands.GetRawOutput(band);
 		}
 		#endregion
 
