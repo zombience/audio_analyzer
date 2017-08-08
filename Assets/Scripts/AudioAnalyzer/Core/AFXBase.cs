@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace AudioAnalyzer
 {
-	public class AFXBase : MonoBehaviour
+	abstract public class AFXBase : MonoBehaviour
 	{
 		[SerializeField]	protected BandValue band;
 	}
