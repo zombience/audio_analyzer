@@ -14,8 +14,8 @@ namespace AudioAnalyzer
 
 		protected void Start()
 		{
-			origin = transform.position;
-			dir = transform.forward;
+			origin	= transform.position;
+			dir		= transform.forward;
 		}
 
 		protected void Update()
@@ -31,7 +31,11 @@ namespace AudioAnalyzer
 				dir = (origin - transform.position).normalized;
 			}
 
-			transform.rotation = Quaternion.Lerp(transform.rotation, dir != Vector3.zero ? Quaternion.LookRotation(-dir) : Quaternion.identity, headingChangeSpeed * band.bandValue);
+			transform.rotation = Quaternion.Lerp(
+				transform.rotation, dir != Vector3.zero ? 
+				Quaternion.LookRotation(-dir)			: 
+				Quaternion.identity, headingChangeSpeed * band.bandValue);
+
 			transform.position += dir;
 		}
 	}

@@ -7,16 +7,16 @@ namespace AudioAnalyzer
 	public class ParticleAFXBase : AFXBase
 	{
 
-		protected ParticleSystem ps;
+		protected ParticleSystem				ps;
 		protected ParticleSystem.EmissionModule em;
-		protected ParticleSystem.MainModule psMain;
-		protected ParticleSystem.Particle[] particles;
+		protected ParticleSystem.MainModule		psMain;
+		protected ParticleSystem.Particle[]		particles;
 
 		protected virtual void Start()
 		{
-			ps = GetComponent<ParticleSystem>();
-			em = ps.emission;
-			psMain = ps.main;
+			ps		= GetComponent<ParticleSystem>();
+			em		= ps.emission;
+			psMain	= ps.main;
 			particles = new ParticleSystem.Particle[ps.main.maxParticles];
 		}
 

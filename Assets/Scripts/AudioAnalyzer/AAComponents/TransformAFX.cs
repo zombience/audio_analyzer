@@ -5,12 +5,9 @@ namespace AudioAnalyzer
 	public class TransformAFX : MonoBehaviour
 	{
 
-		[SerializeField] bool useMover;
-		[SerializeField] TransformMover mover;
-		[SerializeField] bool useScale;
-		[SerializeField] TransformScaler scaler;
-		[SerializeField] bool useRotation;
-		[SerializeField] TransformRotator rotator;
+		[SerializeField] TransformMover		mover;
+		[SerializeField] TransformScaler	scaler;
+		[SerializeField] TransformRotator	rotator;
 
 		#region Unity Methods
 		void Start()
@@ -23,30 +20,41 @@ namespace AudioAnalyzer
 
 		void Update()
 		{
-			if (useMover) mover.Update();
-			if (useScale) scaler.Update();
-			if (useRotation) rotator.Update();
+			if (mover.isActive)		mover.Update();
+			if (scaler.isActive)	scaler.Update();
+			if (rotator.isActive)	rotator.Update();
 		}
 		#endregion
 
 
 		[System.Serializable]
-		class TransformModule
+		public abstract class TransformModule
 		{
+
+			[SerializeField]
+			protected bool active;
 
 			[SerializeField]
 			protected BandValue band = new BandValue();
 
+			/// <summary>
+			/// vector to be used for either direction, scale, or axis, depending on module
+			/// vector is common for editor / inspector purposes
+			/// </summary>
+			[SerializeField]
+			protected Vector3 vector = Vector3.one;
+			
 			protected Transform transform;
+
+			public bool isActive { get { return active; } }
+
 			virtual public void Init(Transform t) { transform = t; }
-			virtual public void Update() { }
+			abstract public void Update();
 		}
 
 		[System.Serializable]
 		class TransformMover : TransformModule
 		{
-			[SerializeField]
-			Vector3 dir = Vector3.up;
 			[SerializeField]
 			bool useLocalSpace;
 
@@ -61,18 +69,14 @@ namespace AudioAnalyzer
 
 			public override void Update()
 			{
-				if (useLocalSpace) transform.localPosition = origin + (dir * band.bandValue);
-				else transform.position = origin + (dir * band.bandValue);
+				if (useLocalSpace) transform.localPosition = origin + (vector * band.bandValue);
+				else transform.position = origin + (vector * band.bandValue);
 			}
 		}
 
 		[System.Serializable]
 		class TransformScaler : TransformModule
 		{
-
-			[SerializeField]
-			Vector3 scale = Vector3.one;
-
 			Vector3 origScale;
 
 			public override void Init(Transform t)
@@ -83,18 +87,15 @@ namespace AudioAnalyzer
 
 			public override void Update()
 			{
-				transform.localScale = origScale + (scale * band.bandValue);
+				transform.localScale = origScale + (vector * band.bandValue);
 			}
 		}
 
 		[System.Serializable]
 		class TransformRotator : TransformModule
 		{
-			[SerializeField]
-			Vector3 axis = Vector3.up;
-
-			[SerializeField]
-			bool useLocalSpace, useAdditiveRotation;
+			[SerializeField] bool useLocalSpace, 
+								useAdditiveRotation;
 
 			Quaternion origRot;
 
@@ -108,17 +109,17 @@ namespace AudioAnalyzer
 			{
 				if (useAdditiveRotation)
 				{
-					transform.Rotate(axis, band.bandValue, useLocalSpace ? Space.Self : Space.World);
+					transform.Rotate(vector, band.bandValue, useLocalSpace ? Space.Self : Space.World);
 				}
 				else
 				{
 					if (useLocalSpace)
 					{
-						transform.localRotation = origRot * Quaternion.AngleAxis(band.bandValue, axis);
+						transform.localRotation = origRot * Quaternion.AngleAxis(band.bandValue, vector);
 					}
 					else
 					{
-						transform.rotation = origRot * Quaternion.AngleAxis(band.bandValue, axis);
+						transform.rotation		= origRot * Quaternion.AngleAxis(band.bandValue, vector);
 					}
 				}
 			}

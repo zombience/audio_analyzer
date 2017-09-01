@@ -1,14 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using System.Reflection;
 using UnityEngine;
-
 using UnityEditor;
 
 namespace AudioAnalyzer.EditorUtilities
 {
 	public class BasePropertyDrawer : PropertyDrawer
 	{
-
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			base.OnGUI(position, property, label);
@@ -30,5 +28,28 @@ namespace AudioAnalyzer.EditorUtilities
 			}
 			return rect;
 		}
+
+		protected Rect DrawProperty(string propName, Rect rect, SerializedProperty property, GUIContent label, System.Action<Rect, SerializedProperty> action = null)
+		{
+			var prop = property.FindPropertyRelative(propName);
+			rect.y += base.GetPropertyHeight(prop, label);
+			rect.height = base.GetPropertyHeight(prop, label);
+
+			if (action == null)
+			{
+				EditorGUI.PropertyField(rect, prop, label);
+			}
+			else
+			{
+				action(rect, prop);
+			}
+			return rect;
+		}
 	}
+
+	public static class Utilities
+	{
+		
+	}
+
 }

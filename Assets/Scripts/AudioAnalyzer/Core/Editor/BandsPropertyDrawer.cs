@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 namespace AudioAnalyzer.EditorUtilities
@@ -9,8 +7,7 @@ namespace AudioAnalyzer.EditorUtilities
 	public class BandValueDrawer : BasePropertyDrawer
 	{
 		bool unfold, showEase;
-		float height; 
-
+		
 		string[] props = new string[]
 		{
 			"band",
@@ -26,8 +23,7 @@ namespace AudioAnalyzer.EditorUtilities
 			EditorGUI.BeginProperty(position, label, property);
 
 			position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), GUIContent.none);
-			height = position.height;
-
+			
 			int indent = EditorGUI.indentLevel;
 			EditorGUI.indentLevel = 0;
 
@@ -36,14 +32,14 @@ namespace AudioAnalyzer.EditorUtilities
 
 			if (unfold)
 			{
-				SerializedProperty prop = null;
+				
 				// props.Length -1 is to skip fallRate, manually draw that one
 				for (int i = 0; i < props.Length - 1; i++)
 				{
 					rect = DrawProperty(props[i], rect, property);
 				}
 
-				prop = property.FindPropertyRelative("easeFall");
+				SerializedProperty prop = property.FindPropertyRelative("easeFall");
 				showEase = prop.boolValue;
 				if (showEase)
 				{
