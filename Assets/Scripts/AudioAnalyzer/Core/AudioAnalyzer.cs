@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+
 namespace AudioAnalyzer
 {
 	[RequireComponent(typeof(AudioSource), typeof(FilterBands))]
@@ -41,6 +42,5 @@ namespace AudioAnalyzer
 			return bands.GetRawOutput(band);
 		}
 		#endregion
-
 	}
 }

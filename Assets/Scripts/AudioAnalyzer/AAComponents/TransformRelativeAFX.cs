@@ -2,9 +2,8 @@
 
 namespace AudioAnalyzer
 {
-	public class TransformAFX : MonoBehaviour
+	public class TransformRelativeAFX : MonoBehaviour
 	{
-
 		[SerializeField] TransformMover		mover;
 		[SerializeField] TransformScaler	scaler;
 		[SerializeField] TransformRotator	rotator;
@@ -27,33 +26,9 @@ namespace AudioAnalyzer
 		#endregion
 
 
+		#region helpers
 		[System.Serializable]
-		public abstract class TransformModule
-		{
-
-			[SerializeField]
-			protected bool active;
-
-			[SerializeField]
-			protected BandValue band = new BandValue();
-
-			/// <summary>
-			/// vector to be used for either direction, scale, or axis, depending on module
-			/// vector is common for editor / inspector purposes
-			/// </summary>
-			[SerializeField]
-			protected Vector3 vector = Vector3.one;
-			
-			protected Transform transform;
-
-			public bool isActive { get { return active; } }
-
-			virtual public void Init(Transform t) { transform = t; }
-			abstract public void Update();
-		}
-
-		[System.Serializable]
-		class TransformMover : TransformModule
+		class TransformMover : TransformModuleRelative
 		{
 			[SerializeField]
 			bool useLocalSpace;
@@ -75,7 +50,7 @@ namespace AudioAnalyzer
 		}
 
 		[System.Serializable]
-		class TransformScaler : TransformModule
+		class TransformScaler : TransformModuleRelative
 		{
 			Vector3 origScale;
 
@@ -92,10 +67,11 @@ namespace AudioAnalyzer
 		}
 
 		[System.Serializable]
-		class TransformRotator : TransformModule
+		class TransformRotator : TransformModuleRelative
 		{
-			[SerializeField] bool useLocalSpace, 
-								useAdditiveRotation;
+			[SerializeField]
+			bool	useLocalSpace, 
+					useAdditiveRotation;
 
 			Quaternion origRot;
 
@@ -124,5 +100,6 @@ namespace AudioAnalyzer
 				}
 			}
 		}
+		#endregion
 	}
 }

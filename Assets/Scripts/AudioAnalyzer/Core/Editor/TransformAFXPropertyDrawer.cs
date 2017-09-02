@@ -5,8 +5,7 @@ using System.Collections;
 
 namespace AudioAnalyzer.EditorUtilities
 {
-
-	[CustomPropertyDrawer(typeof(TransformAFX.TransformModule), true)]
+	[CustomPropertyDrawer(typeof(TransformModuleRelative), true)]
 	public class TransformAFXPropertyDrawer : BasePropertyDrawer
 	{
 
@@ -42,6 +41,7 @@ namespace AudioAnalyzer.EditorUtilities
 			DrawProperty("active", new Rect(position.x, position.y - 20, position.width, 10), property, new GUIContent("Use " + property.name));
 
 			EditorGUI.indentLevel += 2;
+
 			rect.y += 10;
 			unFold = EditorGUI.Foldout(rect, unFold, property.name); ;
 			

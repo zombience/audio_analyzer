@@ -3,11 +3,11 @@ using UnityEditor;
 
 namespace AudioAnalyzer.EditorUtilities
 {
-	[CustomPropertyDrawer(typeof(BandValue), true)]
+	[CustomPropertyDrawer(typeof(BandValueNormalized), true)]
 	public class BandValueDrawer : BasePropertyDrawer
 	{
 		bool unfold, showEase;
-		
+
 		string[] props = new string[]
 		{
 			"band",
@@ -16,26 +16,27 @@ namespace AudioAnalyzer.EditorUtilities
 			"easeFall", // bool value
 			"fallRate"	// only show if easeFall is true
 		};
-		
+
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
 			EditorGUI.BeginProperty(position, label, property);
 
 			position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), GUIContent.none);
-			
+
 			int indent = EditorGUI.indentLevel;
 			EditorGUI.indentLevel = 0;
 
 			Rect rect = new Rect(position.x, position.y, position.width, 10);//EditorGUI.IndentedRect(position);
-			unfold = EditorGUI.Foldout(rect, unfold, "band controls");
+			unfold = EditorGUI.Foldout(rect, unfold, "Band Control");
 
 			if (unfold)
 			{
-				
+
 				// props.Length -1 is to skip fallRate, manually draw that one
 				for (int i = 0; i < props.Length - 1; i++)
 				{
+					if (property.FindPropertyRelative(props[i]) == null) continue;
 					rect = DrawProperty(props[i], rect, property);
 				}
 
@@ -46,14 +47,14 @@ namespace AudioAnalyzer.EditorUtilities
 					rect = DrawProperty("fallRate", rect, property);
 				}
 			}
-			
+
 			EditorGUI.indentLevel = indent;
 			EditorGUI.EndProperty();
 		}
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 		{
-			return base.GetPropertyHeight(property, label) * (unfold ?  props.Length  +  (showEase ? 2 : 0) : 1);
+			return base.GetPropertyHeight(property, label) * (unfold ? props.Length + (showEase ? 2 : 0) : 1);
 		}
 	}
 }

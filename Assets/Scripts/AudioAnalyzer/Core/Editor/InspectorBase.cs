@@ -1,24 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 
 namespace AudioAnalyzer.EditorUtilities
 {
 
-	public class InspectorBase : UnityEditor.Editor
-
+	public class InspectorBase : Editor
 	{
+		protected GUIStyle	style;
+		protected float		inc	= .1f;
+		protected Color		bg	= Color.cyan;
+		protected bool		showDefaultInspector = true;
 
-		protected GUIStyle style;
-		protected float	inc = .1f;
-		protected Color bg = Color.cyan;
-		protected bool showDefaultInspector = true;
-
-		protected Context play = Context.PLAYING;
-		protected Context editor = Context.NOTPLAYING;
-		protected Context either = Context.EITHER;
+		protected Context play		= Context.PLAYING;
+		protected Context editor	= Context.NOTPLAYING;
+		protected Context either	= Context.EITHER;
 
 		protected virtual void OnEnable()
 		{

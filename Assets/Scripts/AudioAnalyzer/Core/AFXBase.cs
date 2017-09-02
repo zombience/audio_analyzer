@@ -5,6 +5,6 @@ namespace AudioAnalyzer
 {
 	abstract public class AFXBase : MonoBehaviour
 	{
-		[SerializeField]	protected BandValue band;
+		[SerializeField]	protected BandValueNormalized band;
 	}
 }

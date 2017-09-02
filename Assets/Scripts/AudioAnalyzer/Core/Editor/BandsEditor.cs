@@ -7,7 +7,7 @@ namespace AudioAnalyzer.Inspector
 {
 
 	[CustomEditor(typeof(FilterBands))]
-	public class EQBandsEditor : InspectorBase<FilterBands>
+	public class EQBandsEditor : InspectorMonoBase<FilterBands>
 	{
 
 		SerializedProperty bands;
