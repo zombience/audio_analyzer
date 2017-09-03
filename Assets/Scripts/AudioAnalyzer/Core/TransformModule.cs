@@ -41,7 +41,7 @@ namespace AudioAnalyzer
 		protected BandValueNormalized band = new BandValueNormalized();
 
 		[SerializeField, HideInInspector]
-		protected Vector3 target;
+		protected Vector3 target = Vector3.zero;
 		public Vector3 Target { get { return target; } set { target = value; } }
 	}
 }
