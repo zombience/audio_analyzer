@@ -58,8 +58,8 @@ namespace AudioAnalyzer.Inspector
 			{
 				GUILayout.BeginHorizontal();
 				GUI.backgroundColor = Color.green;
-				// limit max bands to 4 for now. could potentially have many more, but 
-				// so far best results are with 3-4 bands 
+				// limit max bands to 4 for now. could potentially have many more
+				// but best results are with 3-4 bands 
 				if(bandCount < 4)
 				{
 					if (GUILayout.Button("add band", GUILayout.Width(80), GUILayout.ExpandWidth(true)))

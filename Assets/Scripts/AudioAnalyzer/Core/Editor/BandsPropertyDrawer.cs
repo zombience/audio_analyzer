@@ -54,7 +54,7 @@ namespace AudioAnalyzer.EditorUtilities
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 		{
-			return base.GetPropertyHeight(property, label) * (unfold ? props.Length + (showEase ? 2 : 0) : 1);
+			return base.GetPropertyHeight(property, label) * (unfold ? props.Length + (showEase ? 1 : 0) : 1);
 		}
 	}
 }
