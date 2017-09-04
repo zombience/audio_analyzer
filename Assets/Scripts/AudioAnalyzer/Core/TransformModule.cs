@@ -3,13 +3,23 @@
 namespace AudioAnalyzer
 {
 
+	// I initially did work to abstract both Relative and Fixed transform modules 
+	// so that they could both use the same property drawer
+	// but turns out the Fixed modules do not need extra foldouts
+	// so it is now handled in TransformFixedAFXEditor
+	// but now that this is here I'm not going to undo it. It may be useful for something else
+
 	[System.Serializable]
 	public abstract class TransformModule
 	{
 		[SerializeField]
 		protected bool active;
 
-		
+#if UNITY_EDITOR
+		// for use with inspector, so that expansion sticks after play or unfocus object
+		[SerializeField, HideInInspector]
+		protected bool unfold;
+#endif
 
 		protected Transform transform;
 

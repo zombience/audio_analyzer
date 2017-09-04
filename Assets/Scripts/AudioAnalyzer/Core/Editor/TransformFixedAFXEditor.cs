@@ -8,11 +8,20 @@ namespace AudioAnalyzer.EditorUtilities
 	[CustomEditor(typeof(TransformFixedAFX))]
 	public class TransformFixedAFXEditor : InspectorMonoBase<TransformFixedAFX>
 	{
-
 		Vector3 position, scale;
 		Quaternion rotation;
 		Transform targetObj;
 		Material mat;
+
+		SerializedProperty
+			unfoldMover, 
+			unfoldScaler, 
+			unfoldRotator;
+
+		SerializedProperty
+			mover,
+			scaler,
+			rotator;
 
 		bool isEditing;
 
@@ -20,6 +29,11 @@ namespace AudioAnalyzer.EditorUtilities
 		{
 			base.OnEnable();
 			showDefaultInspector = true;
+
+			mover	= serializedObject.FindProperty("mover");
+			scaler	= serializedObject.FindProperty("scaler");
+			rotator = serializedObject.FindProperty("rotator");
+
 		}
 
 		void OnDisable()
@@ -34,7 +48,10 @@ namespace AudioAnalyzer.EditorUtilities
 
 		public override void OnInspectorGUI()
 		{
-			base.OnInspectorGUI();
+
+			DisplayTransformModule(mover);
+			DisplayTransformModule(scaler);
+			DisplayTransformModule(rotator);
 
 			if(isEditing)
 			{
@@ -50,7 +67,45 @@ namespace AudioAnalyzer.EditorUtilities
 			{
 				Cleanup();
 			}
+
+			serializedObject.ApplyModifiedProperties();
 		}
+
+		void DisplayTransformModule(SerializedProperty module)
+		{
+
+			SerializedProperty isActive = module.FindPropertyRelative("active");
+			SerializedProperty unfold	= module.FindPropertyRelative("unfold");
+			SerializedProperty band		= module.FindPropertyRelative("band");
+
+			SerializedProperty bandIdx	= band.FindPropertyRelative("band");
+			SerializedProperty easeFall = band.FindPropertyRelative("easeFall");
+			SerializedProperty fallRate = band.FindPropertyRelative("fallRate");
+
+			
+			GUILayout.BeginHorizontal();
+			unfold.boolValue = EditorGUILayout.Foldout(unfold.boolValue, new GUIContent(module.name));
+			EditorGUILayout.PropertyField(isActive, new GUIContent("Activate " + module.name));
+			GUILayout.EndHorizontal();
+
+			int indent = EditorGUI.indentLevel;
+			if(unfold.boolValue)
+			{
+				EditorGUI.indentLevel += 2;
+
+				EditorGUILayout.PropertyField(bandIdx, new GUIContent("Band Index"));
+				EditorGUILayout.PropertyField(easeFall, new GUIContent("Ease Fall Rate"));
+
+				if(easeFall.boolValue)
+				{
+					EditorGUI.indentLevel += 1;
+
+					EditorGUILayout.PropertyField(fallRate, new GUIContent("Fall Rate"));
+				}
+			}
+			EditorGUI.indentLevel = indent;
+		}
+			
 
 		void StartEdit()
 		{
