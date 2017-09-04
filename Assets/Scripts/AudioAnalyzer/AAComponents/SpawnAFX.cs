@@ -7,8 +7,10 @@ namespace AudioAnalyzer
 	public class SpawnAFX : AFXBase
 	{
 
-		[SerializeField]	protected int	maxObjects	= 10;
-		[SerializeField]	protected float threshold	= 0.5f;
+		[SerializeField]
+		protected int	maxObjects	= 10;
+		[SerializeField, Range(0.1f,0.95f)]
+		protected float threshold	= 0.5f;
 
 
 		protected Queue<GameObject> objQueue;

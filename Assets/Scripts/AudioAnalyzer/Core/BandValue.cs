@@ -48,7 +48,6 @@ namespace AudioAnalyzer
 	[System.Serializable]
 	public class BandValueRange : BandValueNormalized
 	{
-
 		// set the range of min/max to achieve desired range of effect
 		[SerializeField]
 		protected float
