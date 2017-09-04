@@ -9,12 +9,18 @@ namespace AudioAnalyzer
 	public class BandValueNormalized
 	{
 		// choose which audio band to drive interactions
-		[SerializeField, Range(0, 4)] protected int band;
+		[SerializeField, Range(0, 3)] protected int band;
 
 		[SerializeField] protected bool easeFall;
 
-		[SerializeField, Range(0.05f, 0.95f)]
+		[SerializeField, Range(0.01f, 0.95f)]
 		protected float fallRate = .9f;
+
+#if UNITY_EDITOR
+		// for use with property drawer inspector only
+		[SerializeField, HideInInspector]
+		protected bool unfold;
+#endif
 
 		public float bandValue
 		{
