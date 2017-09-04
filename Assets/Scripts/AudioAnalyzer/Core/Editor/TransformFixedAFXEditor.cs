@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 namespace AudioAnalyzer.EditorUtilities
@@ -33,7 +31,6 @@ namespace AudioAnalyzer.EditorUtilities
 			mover	= serializedObject.FindProperty("mover");
 			scaler	= serializedObject.FindProperty("scaler");
 			rotator = serializedObject.FindProperty("rotator");
-
 		}
 
 		void OnDisable()
@@ -48,14 +45,13 @@ namespace AudioAnalyzer.EditorUtilities
 
 		public override void OnInspectorGUI()
 		{
-
 			DisplayTransformModule(mover);
 			DisplayTransformModule(scaler);
 			DisplayTransformModule(rotator);
 
 			if(isEditing)
 			{
-				style.SectionLabel("adjust target position / scale / rotation", 40, Color.cyan);
+				style.SectionLabel("Adjust target position / scale / rotation \nin Scene Window", 40, Color.black);
 				editor.Button("save target", Color.green, 40, StopEdit);
 			}
 			else
@@ -84,18 +80,20 @@ namespace AudioAnalyzer.EditorUtilities
 
 			
 			GUILayout.BeginHorizontal();
+
 			unfold.boolValue = EditorGUILayout.Foldout(unfold.boolValue, new GUIContent(module.name));
-			EditorGUILayout.PropertyField(isActive, new GUIContent("Activate " + module.name));
+			EditorGUILayout.PropertyField(isActive, new GUIContent("Enable " + module.name));
+
 			GUILayout.EndHorizontal();
 
 			int indent = EditorGUI.indentLevel;
 			if(unfold.boolValue)
 			{
-				EditorGUI.indentLevel += 2;
+				EditorGUI.indentLevel += 1;
 
 				EditorGUILayout.PropertyField(bandIdx, new GUIContent("Band Index"));
 				EditorGUILayout.PropertyField(easeFall, new GUIContent("Ease Fall Rate"));
-
+				
 				if(easeFall.boolValue)
 				{
 					EditorGUI.indentLevel += 1;
@@ -175,8 +173,8 @@ namespace AudioAnalyzer.EditorUtilities
 		{
 			if (targetObj != null) DestroyImmediate(targetObj.gameObject);
 			GameObject leftover = GameObject.Find("fixed_editor_helper");
-			if (leftover != null) DestroyImmediate(leftover);
 
+			if (leftover != null) DestroyImmediate(leftover);
 			if (mat != null) DestroyImmediate(mat);
 		}
 	}
