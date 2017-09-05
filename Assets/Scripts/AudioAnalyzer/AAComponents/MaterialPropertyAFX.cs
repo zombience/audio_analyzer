@@ -7,7 +7,7 @@ using System.Collections.Generic;
 #endif
 namespace AudioAnalyzer
 {
-	public class MaterialPropertyAFX : AFXBase
+	public class MaterialPropertyAFX : AFXNormalizedBase
 	{
 
 		[SerializeField]

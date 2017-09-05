@@ -44,6 +44,7 @@ namespace AudioAnalyzer
 
 	/// <summary>
 	/// BandValueExpandable returns a value between minOutput and maxOutput for the given listen band
+	/// The Normalized version should be adequate for most cases
 	/// </summary>
 	[System.Serializable]
 	public class BandValueRange : BandValueNormalized

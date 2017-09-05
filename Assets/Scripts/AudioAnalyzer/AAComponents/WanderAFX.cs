@@ -4,7 +4,7 @@ using System.Collections;
 namespace AudioAnalyzer
 {
 
-	public class WanderAFX : AFXBase
+	public class WanderAFX : AFXNormalizedBase
 	{
 		[SerializeField]
 		protected float headingChangeSpeed = .5f,

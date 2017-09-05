@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 namespace AudioAnalyzer.EditorUtilities

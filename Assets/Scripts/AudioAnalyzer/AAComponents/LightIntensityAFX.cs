@@ -2,7 +2,7 @@
 
 namespace AudioAnalyzer
 {
-	public class LightIntensityAFX : AFXBase
+	public class LightIntensityAFX : AFXNormalizedBase
 	{
 
 

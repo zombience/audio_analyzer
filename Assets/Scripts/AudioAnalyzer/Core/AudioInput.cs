@@ -1,5 +1,5 @@
-﻿/* THIS CODE HAS BEEN MODIFIED FROM THE ORIGINAL CODE
- * ORIGINAL CODE CAN BE FOUND HERE:
+﻿/* THIS CODE HAS BEEN MODIFIED FROM THE ORIGINAL
+ * ORIGINAL CAN BE FOUND HERE:
  * https://github.com/keijiro/Reaktion
  */
 
@@ -28,11 +28,6 @@
 
 
 using UnityEngine;
-using System.Collections;
-
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace AudioAnalyzer
 {
@@ -95,32 +90,4 @@ namespace AudioAnalyzer
 			}
 		}
 	}
-
-
-#if UNITY_EDITOR
-	[CustomEditor(typeof(AudioInput))]
-	public class AudioInputEditor : Editor
-	{
-		AudioInput obj;
-
-		SerializedProperty useBakedAudio;
-		SerializedProperty clip;
-
-		void OnEnable()
-		{
-			obj = target as AudioInput;
-			useBakedAudio = serializedObject.FindProperty("useBakedAudio");
-			clip = serializedObject.FindProperty("clip");
-		}
-
-		public override void OnInspectorGUI()
-		{
-			serializedObject.Update();
-			EditorGUILayout.PropertyField(useBakedAudio, new GUIContent("use baked audio"));
-			EditorGUILayout.PropertyField(clip, new GUIContent("audio clip"));
-			serializedObject.ApplyModifiedProperties();
-		}
-	}
-#endif
-
 }

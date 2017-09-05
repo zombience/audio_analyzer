@@ -2,7 +2,7 @@
 namespace AudioAnalyzer
 {
 	[RequireComponent(typeof(Animator))]
-	public class AnimationAFXBase : AFXBase
+	public class AnimationAFXBase : AFXRangeBase
 	{
 
 		protected Animator anim;

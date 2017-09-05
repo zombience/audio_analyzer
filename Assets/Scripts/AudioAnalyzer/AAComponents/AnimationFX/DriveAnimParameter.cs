@@ -13,7 +13,6 @@ namespace AudioAnalyzer
 		protected void Update()
 		{
 			anim.SetFloat(targetParam, band.bandValue);
-
 		}
 	}
 }

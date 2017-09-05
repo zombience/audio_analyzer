@@ -4,7 +4,12 @@ using System.Collections.Generic;
 
 namespace AudioAnalyzer
 {
-	public class SpawnAFX : AFXBase
+	/// <summary>
+	/// SpawnAFX will instantiate objects while band input is over threshold
+	/// in order to create your own spawn logic, create a new class and inherit from SpawnAFX
+	/// and override SpawnObject
+	/// </summary>
+	public class SpawnAFX : AFXNormalizedBase
 	{
 
 		[SerializeField]
@@ -25,7 +30,7 @@ namespace AudioAnalyzer
 			if (band.bandValue > threshold) SpawnObject();
 		}
 
-
+		
 		protected virtual void SpawnObject()
 		{
 			if (objQueue.Count >= maxObjects)

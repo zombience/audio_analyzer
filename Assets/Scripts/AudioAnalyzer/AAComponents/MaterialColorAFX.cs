@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace AudioAnalyzer
 {
-	public class MaterialColorAFX : AFXBase
+	public class MaterialColorAFX : AFXNormalizedBase
 	{
 		#region vars
 		[SerializeField]

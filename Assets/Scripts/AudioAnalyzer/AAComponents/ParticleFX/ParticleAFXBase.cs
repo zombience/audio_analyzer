@@ -4,7 +4,7 @@ using System.Collections;
 namespace AudioAnalyzer
 {
 	[RequireComponent(typeof(ParticleSystem))]
-	public class ParticleAFXBase : AFXBase
+	public class ParticleAFXBase : AFXNormalizedBase
 	{
 
 		protected ParticleSystem				ps;
