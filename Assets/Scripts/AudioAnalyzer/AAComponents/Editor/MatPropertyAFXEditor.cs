@@ -35,6 +35,7 @@ namespace AudioAnalyzer.EditorUtilities
 
 		public override void OnInspectorGUI()
 		{
+			CleanupRemovedMaterials();
 			Space(10);
 
 			GUI.backgroundColor = Color.grey;
@@ -233,7 +234,12 @@ namespace AudioAnalyzer.EditorUtilities
 				SerializedProperty cur = properties.GetArrayElementAtIndex(i).FindPropertyRelative("mat");
 				for (int j = 0; j < mats.Length; j++)
 				{
-					idx = cur.objectReferenceValue == mats[j] ? -1 : i;
+
+					if(!mats.Contains(cur.objectReferenceValue))
+					{
+						idx = i;
+						break;
+					}
 				}
 			}
 			if(idx >= 0)
