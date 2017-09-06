@@ -17,7 +17,7 @@ namespace AudioAnalyzer
 		[SerializeField]
 		protected MatHelper[] properties = new MatHelper[0];
 
-
+		
 		protected Renderer rend;
 		
 		protected void Start()
@@ -44,14 +44,24 @@ namespace AudioAnalyzer
 		{
 			for (int i = 0; i < properties.Length; i++)
 			{
-				rend.sharedMaterials[properties[i].matIdx].SetFloat(properties[i].property, band.bandValue * properties[i].inputScale);
-				if (properties[i].useTextureOffset)
+				if(properties[i].useInstanceMat)
 				{
-					rend.sharedMaterials[properties[i].matIdx].SetTextureOffset("_MainTex", properties[i].textureOffset * band.bandValue);
+					rend.materials[properties[i].matIdx].SetFloat(properties[i].property, band.bandValue * properties[i].inputScale);
+					if (properties[i].useTextureOffset)
+					{
+						rend.materials[properties[i].matIdx].SetTextureOffset("_MainTex", properties[i].textureOffset * band.bandValue);
+					}
+				}
+				else
+				{
+					rend.sharedMaterials[properties[i].matIdx].SetFloat(properties[i].property, band.bandValue * properties[i].inputScale);
+					if (properties[i].useTextureOffset)
+					{
+						rend.sharedMaterials[properties[i].matIdx].SetTextureOffset("_MainTex", properties[i].textureOffset * band.bandValue);
+					}
 				}
 			}
 		}
-
 	}
 	// mat helper currently only works with setting float values
 	[System.Serializable]
@@ -63,6 +73,12 @@ namespace AudioAnalyzer
 		public string property;
 		public float inputScale = 1f;
 		public bool useTextureOffset;
+		/// <summary>
+		/// if true, code will access renderer.materials instead of renderer.sharedMaterials
+		/// accessing sharedMaterials will affect all objects with this material
+		/// </summary>
+		public bool useInstanceMat = true;
+
 		public Vector2 textureOffset { get { return new Vector2(tx.x * xScale, tx.y * yScale); } }
 		[SerializeField]
 		protected Vector2 tx;

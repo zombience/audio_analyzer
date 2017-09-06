@@ -5,11 +5,9 @@ using AudioAnalyzer.EditorUtilities;
 
 namespace AudioAnalyzer.Inspector
 {
-
 	[CustomEditor(typeof(FilterBands))]
 	public class FilterBandsEditor : InspectorMonoBase<FilterBands>
 	{
-
 		SerializedProperty bands;
 		SerializedProperty mute;
 		SerializedProperty audioCurve;
@@ -25,11 +23,11 @@ namespace AudioAnalyzer.Inspector
 			base.OnEnable();
 			showDefaultInspector = false;
 
-			bands = serializedObject.FindProperty("bands");
-			mute = serializedObject.FindProperty("muteAudio");
-			audioCurve = serializedObject.FindProperty("audioCurve");
-			bgColor = GUI.backgroundColor;
-			filters = (target as FilterBands).editorBands;
+			bands		= serializedObject.FindProperty("bands");
+			mute		= serializedObject.FindProperty("muteAudio");
+			audioCurve	= serializedObject.FindProperty("audioCurve");
+			bgColor		= GUI.backgroundColor;
+			filters		= (target as FilterBands).editorBands;
 		}
 
 
@@ -89,27 +87,30 @@ namespace AudioAnalyzer.Inspector
 
 			for (int i = 0; i < bands.arraySize; i++)
 			{
-				SerializedProperty band = bands.GetArrayElementAtIndex(order[i]);
-				SerializedProperty listen = band.FindPropertyRelative("listen");
-				SerializedProperty cutoff = band.FindPropertyRelative("cutoff");
-				SerializedProperty q = band.FindPropertyRelative("q");
-				SerializedProperty gain = band.FindPropertyRelative("bandGain");
+				SerializedProperty band		= bands.GetArrayElementAtIndex(order[i]);
+				SerializedProperty listen	= band.FindPropertyRelative("listen");
+				SerializedProperty cutoff	= band.FindPropertyRelative("cutoff");
+				SerializedProperty q		= band.FindPropertyRelative("q");
+				SerializedProperty gain		= band.FindPropertyRelative("bandGain");
 
-				SerializedProperty headroom = band.FindPropertyRelative("headroom");
+				SerializedProperty headroom		= band.FindPropertyRelative("headroom");
 				SerializedProperty dynamicRange = band.FindPropertyRelative("dynamicRange");
-				SerializedProperty lowerBound = band.FindPropertyRelative("lowerBound");
-				SerializedProperty sensitivity = band.FindPropertyRelative("sensitivity");
+				SerializedProperty lowerBound	= band.FindPropertyRelative("lowerBound");
+				SerializedProperty sensitivity	= band.FindPropertyRelative("sensitivity");
 
 				GUI.backgroundColor = Color.yellow;
 				EditorGUILayout.PropertyField(listen);
 
-				GUI.backgroundColor = Color.cyan;
 				GUILayout.BeginHorizontal();
+
+				GUI.backgroundColor = Color.cyan;
 				GUILayout.Label("cutoff in hz: ", GUILayout.Width(80));
 				EditorGUILayout.FloatField(Mathf.Pow(2, 10 * cutoff.floatValue - 10) * 15000);
+
 				GUILayout.EndHorizontal();
 
 				GUI.backgroundColor = Color.magenta;
+
 				EditorGUILayout.PropertyField(cutoff);
 				EditorGUILayout.PropertyField(q);
 				EditorGUILayout.PropertyField(gain);
