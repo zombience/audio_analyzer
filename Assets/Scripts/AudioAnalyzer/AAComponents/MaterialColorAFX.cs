@@ -11,9 +11,6 @@ namespace AudioAnalyzer
 		[SerializeField]
 		protected Color low;
 
-		[SerializeField]
-		protected float test;
-
 		protected Renderer rend;
 		protected Material[] mats;
 		#endregion

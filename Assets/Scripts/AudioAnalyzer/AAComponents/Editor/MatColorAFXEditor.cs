@@ -4,6 +4,7 @@ using UnityEditor;
 
 namespace AudioAnalyzer.EditorUtilities
 {
+	[CanEditMultipleObjects]
 	[CustomEditor(typeof(MaterialColorAFX))]
 	public class MatColorAFXEditor : InspectorMonoBase<MaterialColorAFX>
 	{

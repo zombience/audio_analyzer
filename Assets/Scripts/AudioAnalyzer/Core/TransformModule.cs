@@ -42,6 +42,14 @@ namespace AudioAnalyzer
 
 		[SerializeField]
 		protected BandValueRange band = new BandValueRange();
+
+		/// <summary>
+		/// for use when master band is in use rather than each individual module 
+		/// calculating band values
+		/// </summary>
+		/// <param name="value"></param>
+		public virtual void Update(float value) { }
+		
 	}
 
 	public abstract class TransformModuleFixed : TransformModule

@@ -2,8 +2,10 @@
 
 namespace AudioAnalyzer
 {
-	public class TransformRelativeAFX : MonoBehaviour
+	public class TransformRelativeAFX : AFXRangeBase
 	{
+		[SerializeField] bool useMasterBand;
+
 		[SerializeField] TransformMover		mover;
 		[SerializeField] TransformScaler	scaler;
 		[SerializeField] TransformRotator	rotator;
@@ -19,9 +21,18 @@ namespace AudioAnalyzer
 
 		void Update()
 		{
-			if (mover.isActive)		mover.Update();
-			if (scaler.isActive)	scaler.Update();
-			if (rotator.isActive)	rotator.Update();
+			if(!useMasterBand)
+			{
+				if (mover.isActive)		mover.Update();
+				if (scaler.isActive)	scaler.Update();
+				if (rotator.isActive)	rotator.Update();
+			}
+			else
+			{
+				if (mover.isActive)		mover.Update(band.bandValue);
+				if (scaler.isActive)	scaler.Update(band.bandValue);
+				if (rotator.isActive)	rotator.Update(band.bandValue);
+			}
 		}
 		#endregion
 
@@ -47,6 +58,12 @@ namespace AudioAnalyzer
 				if (useLocalSpace) transform.localPosition = origin + (vector * band.bandValue);
 				else transform.position = origin + (vector * band.bandValue);
 			}
+
+			public override void Update(float value)
+			{
+				if (useLocalSpace) transform.localPosition = origin + (vector * value);
+				else transform.position = origin + (vector * value);
+			}
 		}
 
 		[System.Serializable]
@@ -63,6 +80,11 @@ namespace AudioAnalyzer
 			public override void Update()
 			{
 				transform.localScale = origScale + (vector * band.bandValue);
+			}
+
+			public override void Update(float value)
+			{
+				transform.localScale = origScale + (vector * value);
 			}
 		}
 
@@ -96,6 +118,25 @@ namespace AudioAnalyzer
 					else
 					{
 						transform.rotation		= origRot * Quaternion.AngleAxis(band.bandValue, vector);
+					}
+				}
+			}
+
+			public override void Update(float value)
+			{
+				if (useAdditiveRotation)
+				{
+					transform.Rotate(vector, value, useLocalSpace ? Space.Self : Space.World);
+				}
+				else
+				{
+					if (useLocalSpace)
+					{
+						transform.localRotation = origRot * Quaternion.AngleAxis(value * 10f, vector);
+					}
+					else
+					{
+						transform.rotation = origRot * Quaternion.AngleAxis(value * 10f, vector);
 					}
 				}
 			}
