@@ -11,6 +11,9 @@ namespace AudioAnalyzer
 		[SerializeField]
 		protected Color low;
 
+		[SerializeField]
+		protected float test;
+
 		protected Renderer rend;
 		protected Material[] mats;
 		#endregion
@@ -31,5 +34,16 @@ namespace AudioAnalyzer
 			rend.materials = mats;
 		}
 		#endregion
+
+	#if UNITY_EDITOR
+		// not sure why but this was failing in custom inspector
+		public void GetMatColors()
+		{
+			// set low and high to material color so user has the option 
+			// to select which should be a custom color
+			high	= GetComponent<Renderer>().sharedMaterial.color;
+			low		= GetComponent<Renderer>().sharedMaterial.color;
+		}
+	#endif
 	}
 }

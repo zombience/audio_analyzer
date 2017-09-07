@@ -96,7 +96,6 @@ namespace AudioAnalyzer.Inspector
 				SerializedProperty headroom		= band.FindPropertyRelative("headroom");
 				SerializedProperty dynamicRange = band.FindPropertyRelative("dynamicRange");
 				SerializedProperty lowerBound	= band.FindPropertyRelative("lowerBound");
-				SerializedProperty sensitivity	= band.FindPropertyRelative("sensitivity");
 
 				GUI.backgroundColor = Color.yellow;
 				EditorGUILayout.PropertyField(listen);

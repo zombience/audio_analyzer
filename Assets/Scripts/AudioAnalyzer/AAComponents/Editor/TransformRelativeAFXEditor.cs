@@ -37,28 +37,6 @@ namespace AudioAnalyzer.EditorUtilities
 			serializedObject.ApplyModifiedProperties();
 		}
 
-
-		string[] ignoreProps = new string[]
-		{
-			"active", 
-			"unfold",
-			"band",
-			"bandUnfold",
-			"easeFall"
-		};
-
-		string[] bandProperties = new string[]
-		{
-			"band",
-			"easeFall",
-			"fallRate",
-			"unfold",
-			"minOutput",
-			"maxOutput",
-			"offset"
-		};
-
-
 		void DisplayTransformModule(SerializedProperty module)
 		{
 
