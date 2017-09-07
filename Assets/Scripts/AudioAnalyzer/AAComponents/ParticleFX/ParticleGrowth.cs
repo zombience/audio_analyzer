@@ -6,12 +6,16 @@ namespace AudioAnalyzer
 	public class ParticleGrowth : ParticleAFXBase
 	{
 		[SerializeField]
-		protected float growthSpeed = .75f;
+		float growthSpeed = .75f;
 		[SerializeField, Range(0.05f, 0.95f)]
-		protected float threshold = .3f;
+		float threshold = .3f;
 
 		[SerializeField]
-		protected Color targetColor = Color.cyan;
+		bool useTargetColor;
+
+		[SerializeField]
+		Color targetColor = Color.cyan;
+
 
 		protected override void ProcessParticles()
 		{
@@ -23,7 +27,10 @@ namespace AudioAnalyzer
 					if (particles[i].remainingLifetime > psMain.startLifetime.constant * .9f)
 					{
 						particles[i].startSize += growthSpeed;
-						particles[i].startColor = targetColor * band.bandValue;
+						if (useTargetColor)
+						{
+							particles[i].startColor = targetColor * band.bandValue;
+						}
 					}
 				}
 				ps.SetParticles(particles, pCount);

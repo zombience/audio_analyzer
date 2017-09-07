@@ -40,6 +40,7 @@ namespace AudioAnalyzer.EditorUtilities
 
 			GUI.backgroundColor = Color.grey;
 
+			style.SectionLabel("Band ", Color.cyan * .6f, 20);
 			EditorGUILayout.PropertyField(serializedObject.FindProperty("band"));
 
 			if(mats == null)
@@ -228,6 +229,9 @@ namespace AudioAnalyzer.EditorUtilities
 
 		void CleanupRemovedMaterials()
 		{
+
+			if (Application.isPlaying) return;
+
 			int idx = -1;
 			for (int i = 0; i < properties.arraySize; i++)
 			{
