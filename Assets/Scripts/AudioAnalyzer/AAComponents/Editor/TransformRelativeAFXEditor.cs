@@ -4,20 +4,24 @@ using System.Linq;
 
 namespace AudioAnalyzer.EditorUtilities
 {
+	[CanEditMultipleObjects]
 	[CustomEditor(typeof(TransformRelativeAFX))]
 	public class TransformRelativeAFXEditor : InspectorMonoBase<TransformRelativeAFX>
 	{
 
 		SerializedProperty
+			unFoldMaster,
 			unfoldMover,
 			unfoldScaler,
 			unfoldRotator;
-			
-
+		
 		SerializedProperty
 			mover,
 			scaler,
 			rotator;
+
+		SerializedProperty
+			masterBand;
 
 		protected override void OnEnable()
 		{
@@ -26,38 +30,31 @@ namespace AudioAnalyzer.EditorUtilities
 			mover	= serializedObject.FindProperty("mover");
 			scaler	= serializedObject.FindProperty("scaler");
 			rotator = serializedObject.FindProperty("rotator");
+
+			masterBand		= serializedObject.FindProperty("band");
+			unFoldMaster	= serializedObject.FindProperty("useMasterBand");
 		}
 
 		public override void OnInspectorGUI()
 		{
+			style.SectionLabel("Master Band", Color.blue * .5f, 20);
+
+			unFoldMaster.boolValue = EditorGUILayout.Foldout(unFoldMaster.boolValue, new GUIContent("Using " + (unFoldMaster.boolValue ? "Master " : "Individual ") + "Band Settings"));
+			int indent = EditorGUI.indentLevel;
+			if (unFoldMaster.boolValue)
+			{
+				EditorGUI.indentLevel += 1;
+				EditorGUILayout.PropertyField(masterBand);
+			}
+			EditorGUI.indentLevel = indent;
+
+			style.SectionLabel("Modules", Color.blue * .5f, 20);
 			DisplayTransformModule(mover);
 			DisplayTransformModule(scaler);
 			DisplayTransformModule(rotator);
 
 			serializedObject.ApplyModifiedProperties();
 		}
-
-
-		string[] ignoreProps = new string[]
-		{
-			"active", 
-			"unfold",
-			"band",
-			"bandUnfold",
-			"easeFall"
-		};
-
-		string[] bandProperties = new string[]
-		{
-			"band",
-			"easeFall",
-			"fallRate",
-			"unfold",
-			"minOutput",
-			"maxOutput",
-			"offset"
-		};
-
 
 		void DisplayTransformModule(SerializedProperty module)
 		{
@@ -113,7 +110,6 @@ namespace AudioAnalyzer.EditorUtilities
 			EditorGUILayout.PropertyField(vector, new GUIContent("Axis"));
 			EditorGUILayout.PropertyField(local);
 			EditorGUILayout.PropertyField(add);
-
 		}
 	}
 }

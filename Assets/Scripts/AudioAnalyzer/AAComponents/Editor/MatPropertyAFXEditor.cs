@@ -12,7 +12,7 @@ namespace AudioAnalyzer.EditorUtilities
 	{
 		Dictionary<Material, List<string>> matProps = new Dictionary<Material, List<string>>();
 
-		bool[] matFoldout, propFoldout;
+		bool[] matFoldout;
 		Material[] mats;
 		
 
@@ -30,7 +30,6 @@ namespace AudioAnalyzer.EditorUtilities
 			properties = serializedObject.FindProperty("properties");
 
 			matFoldout = new bool[mats.Length];
-			propFoldout = new bool[properties.arraySize];
 		}
 
 		public override void OnInspectorGUI()

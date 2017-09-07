@@ -25,8 +25,14 @@ namespace AudioAnalyzer
 
 		public bool isActive { get { return active; } }
 
-		virtual public void Init(Transform t) { transform = t; }
+		abstract public void Init(Transform t, bool useMasterBand);
 		abstract public void Update();
+
+		/// for use when master band is in use rather than each individual module 
+		/// calculating band values
+		/// </summary>
+		/// <param name="value"></param>
+		public virtual void Update(float value) { }
 	}
 
 
@@ -40,8 +46,25 @@ namespace AudioAnalyzer
 		[SerializeField]
 		protected Vector3 vector = Vector3.one;
 
+
+		public float Value { get { return UseMasterBand ? value : band.bandValue; } set { this.value = value; } }
+		protected float value;
+		/// <summary>
+		/// for use when master band is in use rather than each individual module 
+		/// calculating band values
+		/// </summary>
+		protected bool UseMasterBand { get; set; }
+
+
 		[SerializeField]
 		protected BandValueRange band = new BandValueRange();
+
+
+		public override void Init(Transform t, bool useMasterBand)
+		{
+			transform = t;
+			UseMasterBand = useMasterBand;
+		}
 	}
 
 	public abstract class TransformModuleFixed : TransformModule
@@ -50,8 +73,22 @@ namespace AudioAnalyzer
 		[SerializeField]
 		protected BandValueNormalized band = new BandValueNormalized();
 
+		public float Value { get { return UseMasterBand ? value : band.bandValue; } set { this.value = value; } }
+		protected float value;
+		/// <summary>
+		/// for use when master band is in use rather than each individual module 
+		/// calculating band values
+		/// </summary>
+		protected bool UseMasterBand { get; set; }
+
 		[SerializeField, HideInInspector]
 		protected Vector3 target = Vector3.zero;
 		public Vector3 Target { get { return target; } set { target = value; } }
+
+		public override void Init(Transform t, bool useMasterBand)
+		{
+			transform = t;
+			UseMasterBand = useMasterBand;
+		}
 	}
 }

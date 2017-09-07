@@ -13,10 +13,12 @@ namespace AudioAnalyzer
 	{
 
 		[SerializeField]
-		protected int	maxObjects	= 10;
+		int	maxObjects	= 10;
 		[SerializeField, Range(0.1f,0.95f)]
-		protected float threshold	= 0.5f;
+		float threshold	= 0.5f;
 
+		[SerializeField]
+		GameObject prefab;
 
 		protected Queue<GameObject> objQueue;
 
@@ -39,14 +41,13 @@ namespace AudioAnalyzer
 				Destroy(obj);
 			}
 
-			GameObject newObj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+			GameObject newObj = Instantiate<GameObject>(prefab);
 			Vector3 pos = Random.onUnitSphere * 1.5f;
 			newObj.transform.parent = transform;
 			newObj.transform.localPosition = pos;
 			newObj.transform.localScale = Vector3.one * .3f;
+			
 
-			Rigidbody body = newObj.AddComponent<Rigidbody>();
-			body.AddForce(pos + Vector3.up * 3f, ForceMode.VelocityChange);
 			objQueue.Enqueue(newObj);
 		}
 	}

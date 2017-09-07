@@ -12,6 +12,7 @@ namespace AudioAnalyzer.EditorUtilities
 		Material mat;
 
 		SerializedProperty
+			unFoldMaster,
 			unfoldMover, 
 			unfoldScaler, 
 			unfoldRotator;
@@ -20,6 +21,9 @@ namespace AudioAnalyzer.EditorUtilities
 			mover,
 			scaler,
 			rotator;
+
+		SerializedProperty
+			masterBand;
 
 		bool isEditing;
 
@@ -31,6 +35,9 @@ namespace AudioAnalyzer.EditorUtilities
 			mover	= serializedObject.FindProperty("mover");
 			scaler	= serializedObject.FindProperty("scaler");
 			rotator = serializedObject.FindProperty("rotator");
+
+			masterBand		= serializedObject.FindProperty("band");
+			unFoldMaster	= serializedObject.FindProperty("useMasterBand");
 		}
 
 		void OnDisable()
@@ -45,6 +52,17 @@ namespace AudioAnalyzer.EditorUtilities
 
 		public override void OnInspectorGUI()
 		{
+			style.SectionLabel("Master Band", Color.blue * .5f, 20);
+
+			unFoldMaster.boolValue = EditorGUILayout.Foldout(unFoldMaster.boolValue, new GUIContent("Using " + (unFoldMaster.boolValue ? "Master " : "Individual ") + "Band Settings"));
+			int indent = EditorGUI.indentLevel;
+			if (unFoldMaster.boolValue)
+			{
+				EditorGUI.indentLevel += 1;
+				EditorGUILayout.PropertyField(masterBand);
+			}
+			EditorGUI.indentLevel = indent;
+
 			DisplayTransformModule(mover);
 			DisplayTransformModule(scaler);
 			DisplayTransformModule(rotator);

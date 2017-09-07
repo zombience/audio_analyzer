@@ -4,8 +4,10 @@ using UnityEngine;
 
 namespace AudioAnalyzer
 {
-	public class TransformFixedAFX : MonoBehaviour
+	public class TransformFixedAFX : AFXNormalizedBase
 	{
+
+		[SerializeField] bool useMasterBand;
 
 		[SerializeField] TransformMover		mover;
 		[SerializeField] TransformScaler	scaler;
@@ -14,17 +16,41 @@ namespace AudioAnalyzer
 		#region Unity Methods
 		void Start()
 		{
-			mover.Init(transform);
-			scaler.Init(transform);
-			rotator.Init(transform);
+			mover.Init(transform, useMasterBand);
+			scaler.Init(transform, useMasterBand);
+			rotator.Init(transform, useMasterBand);
 		}
-
-
+		
 		void Update()
 		{
-			if (mover.isActive)		mover.Update();
-			if (scaler.isActive)	scaler.Update();
-			if (rotator.isActive)	rotator.Update();
+			if (useMasterBand)
+			{
+				float value = band.bandValue;
+				if (mover.isActive)
+				{
+					mover.Value = value;
+					mover.Update();
+				}
+
+				if (scaler.isActive)
+				{
+					scaler.Value = value;
+					scaler.Update();
+				}
+
+				if (rotator.isActive)
+				{
+					rotator.Value = value;
+					rotator.Update();
+				}
+			}
+			else
+			{
+				if (mover.isActive)		mover.Update();
+				if (scaler.isActive)	scaler.Update();
+				if (rotator.isActive)	rotator.Update();
+			}
+
 		}
 		#endregion
 
@@ -33,16 +59,16 @@ namespace AudioAnalyzer
 		{
 			Vector3 origin;
 
-			public override void Init(Transform t)
+			public override void Init(Transform t, bool useMaster)
 			{
-				base.Init(t);
+				base.Init(t, useMaster);
 
 				origin = transform.position;
 			}
 
 			public override void Update()
 			{
-				transform.position = Vector3.Lerp(origin, Target, band.bandValue);
+				transform.position = Vector3.Lerp(origin, Target, Value);
 			}
 		}
 
@@ -51,15 +77,15 @@ namespace AudioAnalyzer
 		{
 			Vector3 origScale;
 
-			public override void Init(Transform t)
+			public override void Init(Transform t, bool useMaster)
 			{
-				base.Init(t);
+				base.Init(t, useMaster);
 				origScale = transform.localScale;
 			}
 
 			public override void Update()
 			{
-				transform.localScale = Vector3.Lerp(origScale, Target, band.bandValue);
+				transform.localScale = Vector3.Lerp(origScale, Target, Value);
 			}
 		}
 
@@ -72,19 +98,19 @@ namespace AudioAnalyzer
 
 			public Quaternion TargetRotation { set { targetRot = value; } get { return targetRot; } }
 
-			public override void Init(Transform t)
+			public override void Init(Transform t, bool useMaster)
 			{
-				base.Init(t);
+				base.Init(t, useMaster);
 				origRot = transform.rotation;
 			}
 
 			public override void Update()
 			{
-				transform.rotation = Quaternion.Lerp(origRot, targetRot, band.bandValue);
+				transform.rotation = Quaternion.Lerp(origRot, targetRot, Value);
 			}
 		}
 
-#if UNITY_EDITOR
+		#if UNITY_EDITOR
 		[HideInInspector]
 		public bool isEditing;
 
@@ -108,6 +134,6 @@ namespace AudioAnalyzer
 		{
 			Debug.DrawLine(transform.position, Position, Color.red);
 		}
-#endif
+		#endif
 	}
 }
