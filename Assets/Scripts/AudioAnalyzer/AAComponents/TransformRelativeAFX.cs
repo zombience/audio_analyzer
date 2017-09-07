@@ -13,30 +13,44 @@ namespace AudioAnalyzer
 		#region Unity Methods
 		void Start()
 		{
-			mover.Init(transform);
-			scaler.Init(transform);
-			rotator.Init(transform);
+			mover.Init(transform, useMasterBand);
+			scaler.Init(transform, useMasterBand);
+			rotator.Init(transform, useMasterBand);
 		}
 
 
 		void Update()
 		{
-			if(!useMasterBand)
+			if(useMasterBand)
 			{
-				if (mover.isActive)		mover.Update();
-				if (scaler.isActive)	scaler.Update();
-				if (rotator.isActive)	rotator.Update();
+				float value = band.bandValue;
+				if (mover.isActive)
+				{
+					mover.Value = value;
+					mover.Update();
+				}
+
+				if (scaler.isActive)
+				{
+					scaler.Value = value;
+					scaler.Update();
+				}
+
+				if (rotator.isActive)
+				{
+					rotator.Value = value;
+					rotator.Update();
+				}
 			}
 			else
 			{
-				if (mover.isActive)		mover.Update(band.bandValue);
-				if (scaler.isActive)	scaler.Update(band.bandValue);
-				if (rotator.isActive)	rotator.Update(band.bandValue);
+				if (mover.isActive) mover.Update();
+				if (scaler.isActive) scaler.Update();
+				if (rotator.isActive) rotator.Update();
 			}
 		}
 		#endregion
-
-
+			
 		#region helpers
 		[System.Serializable]
 		class TransformMover : TransformModuleRelative
@@ -46,23 +60,17 @@ namespace AudioAnalyzer
 
 			Vector3 origin;
 
-			public override void Init(Transform t)
+			public override void Init(Transform t, bool useMaster)
 			{
-				base.Init(t);
+				base.Init(t, useMaster);
 				if (useLocalSpace) origin = transform.localPosition;
 				else origin = transform.position;
 			}
 
 			public override void Update()
 			{
-				if (useLocalSpace) transform.localPosition = origin + (vector * band.bandValue);
-				else transform.position = origin + (vector * band.bandValue);
-			}
-
-			public override void Update(float value)
-			{
-				if (useLocalSpace) transform.localPosition = origin + (vector * value);
-				else transform.position = origin + (vector * value);
+				if (useLocalSpace) transform.localPosition = origin + (vector * Value);
+				else transform.position = origin + (vector * Value);
 			}
 		}
 
@@ -71,15 +79,15 @@ namespace AudioAnalyzer
 		{
 			Vector3 origScale;
 
-			public override void Init(Transform t)
+			public override void Init(Transform t, bool useMaster)
 			{
-				base.Init(t);
+				base.Init(t, useMaster);
 				origScale = transform.localScale;
 			}
 
 			public override void Update()
 			{
-				transform.localScale = origScale + (vector * band.bandValue);
+				transform.localScale = origScale + (vector * Value);
 			}
 
 			public override void Update(float value)
@@ -97,9 +105,9 @@ namespace AudioAnalyzer
 
 			Quaternion origRot;
 
-			public override void Init(Transform t)
+			public override void Init(Transform t, bool useMaster)
 			{
-				base.Init(t);
+				base.Init(t, useMaster);
 				origRot = useLocalSpace ? transform.localRotation : transform.rotation;
 			}
 
@@ -107,17 +115,17 @@ namespace AudioAnalyzer
 			{
 				if (useAdditiveRotation)
 				{
-					transform.Rotate(vector, band.bandValue, useLocalSpace ? Space.Self : Space.World);
+					transform.Rotate(vector, Value, useLocalSpace ? Space.Self : Space.World);
 				}
 				else
 				{
 					if (useLocalSpace)
 					{
-						transform.localRotation = origRot * Quaternion.AngleAxis(band.bandValue, vector);
+						transform.localRotation = origRot * Quaternion.AngleAxis(Value, vector);
 					}
 					else
 					{
-						transform.rotation		= origRot * Quaternion.AngleAxis(band.bandValue, vector);
+						transform.rotation		= origRot * Quaternion.AngleAxis(Value, vector);
 					}
 				}
 			}
